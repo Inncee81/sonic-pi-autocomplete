@@ -1,9 +1,9 @@
 {
-  "name": "atom-sonic",
+  "name": "sonic-pi-autocomplete",
   "main": "./lib/atom-sonic",
-  "version": "0.3.2",
-  "description": "Sonic Pi Atom integration",
-  "keywords": [],
+  "version": "1.0.0",
+  "description": "Sonic Pi + Atom Integration... with Super Cow Powers",
+  "keywords": ["Sonic", "Pi", "Live Coding", "STEAM", "Music"],
   "providedServices": {
     "autocomplete.provider": {
       "versions": {

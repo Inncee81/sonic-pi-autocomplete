@@ -80,12 +80,12 @@ module.exports = provider =
 
     placeholders:
       slide_shape:
-        "step": 0
-        "linear": 1
-        "sine": 3
-        "welch": 4
-        "squared": 6
-        "cubed": 7
+        "step": '0'
+        "linear": '1'
+        "sine": '3'
+        "welch": '4'
+        "squared": '6'
+        "cubed": '7'
 
 
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix, activatedManually}) ->
@@ -101,7 +101,7 @@ module.exports = provider =
 
       #console.log "DEBUG>> Prefix: " + prefix
       #console.log "DEBUG>> First: " + first_word_of_row + ", Preceding: " + preceding_word_from_cursor
-      console.log "DEBUG>> Second Last: " + third_last_word_of_row
+      console.log "DEBUG>> Third Last: " + third_last_word_of_row
 
       #Expecting Sample
       if first_word_of_row == "sample" and preceding_word_from_cursor != "sample"
@@ -175,11 +175,13 @@ module.exports = provider =
         if type == 'placeholders'
           for placeholder_context, placeholder_mappings of list
             if placeholder_context == 'slide_shape'
-              for placeholder, value of placeholder_mappings when item.substring(0, prefix.length) == prefix and third_last_word_of_row.endsWith('slide_shape:')
+              for placeholder, value of placeholder_mappings when placeholder.substring(0, prefix.length) == prefix and
+                    secondlast.endsWith('slide_shape:')
                 suggestions.push
                   text: value
                   type: 'constant'
                   rightLabel: 'Sonic Pi Slide Shape'
+                  displayText: placeholder
         else
           for item in list when item.substring(0, prefix.length) == prefix
             ###
