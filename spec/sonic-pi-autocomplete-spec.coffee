@@ -1,4 +1,4 @@
-AtomSonic = require '../lib/sonic-pi-autocomplete'
+SonicPiAutocomplete = require '../lib/sonic-pi-autocomplete'
 
 # Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.
 #
