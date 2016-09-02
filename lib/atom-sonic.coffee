@@ -19,11 +19,11 @@ module.exports = AtomSonic =
   play: (selector) ->
     editor = atom.workspace.getActiveTextEditor()
     source = editor[selector]()
-    @send '/run-code', source
+    @send '/run-code', 'SONIC_PI_CLI', source
     atom.notifications.addSuccess "Sent source code to Sonic Pi."
 
   stop: ->
-    @send '/stop-all-jobs'
+    @send '/stop-all-jobs', 'SONIC_PI_CLI'
     atom.notifications.addInfo "Told Sonic Pi to stop playing."
 
   send: (args...) ->
