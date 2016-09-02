@@ -2,7 +2,7 @@
 osc                   = require 'node-osc'
 provider              = require './sonic-pi-autocompleter'
 
-module.exports = AtomSonic =
+module.exports = SonicPiAutocomplete =
   subscriptions: null
   provide: -> provider
 
