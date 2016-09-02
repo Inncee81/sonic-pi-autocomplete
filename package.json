@@ -11,7 +11,7 @@
       }
     }
   },
-  "repository": "https://github.com/rkh/atom-sonic",
+  "repository": "https://github.com/euwbah/sonic-pi-autocomplete",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"

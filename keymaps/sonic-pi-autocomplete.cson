@@ -8,6 +8,6 @@
 # For more detailed documentation see
 # https://atom.io/docs/latest/behind-atom-keymaps-in-depth
 'atom-workspace':
-  'ctrl-r': 'atom-sonic:play-file'
-  'ctrl-alt-r': 'atom-sonic:play-selection'
-  'ctrl-s': 'atom-sonic:stop'
+  'alt-r': 'sonic-pi-autocomplete:play-file'
+  'ctrl-alt-r': 'sonic-pi-autocomplete:play-selection'
+  'alt-shift-s': 'sonic-pi-autocomplete:stop'

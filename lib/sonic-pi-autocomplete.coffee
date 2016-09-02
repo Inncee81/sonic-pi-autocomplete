@@ -1,6 +1,6 @@
 {CompositeDisposable} = require 'atom'
 osc                   = require 'node-osc'
-provider              = require './atom-sonic-autocomplete'
+provider              = require './sonic-pi-autocompleter'
 
 module.exports = AtomSonic =
   subscriptions: null
@@ -9,9 +9,9 @@ module.exports = AtomSonic =
   activate: (state) ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add(atom.commands.add 'atom-workspace',
-      'atom-sonic:play-file':      => @play('getText'),
-      'atom-sonic:play-selection': => @play('getSelectedText'),
-      'atom-sonic:stop':           => @stop())
+      'sonic-pi-autocomplete:play-file':      => @play('getText'),
+      'sonic-pi-autocomplete:play-selection': => @play('getSelectedText'),
+      'sonic-pi-autocomplete:stop':           => @stop())
 
   deactivate: ->
     @subscriptions.dispose()

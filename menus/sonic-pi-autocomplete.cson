@@ -7,15 +7,15 @@
       'submenu': [
         {
           'label': 'Play File'
-          'command': 'atom-sonic:play-file'
+          'command': 'sonic-pi-autocomplete:play-file'
         },
         {
           'label': 'Play Selection'
-          'command': 'atom-sonic:play-selection'
+          'command': 'sonic-pi-autocomplete:play-selection'
         },
         {
           'label': 'Stop Playing'
-          'command': 'atom-sonic:stop'
+          'command': 'sonic-pi-autocomplete:stop'
         }
       ]
     ]
