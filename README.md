@@ -62,12 +62,15 @@ parameters (not fully implemented yet though!).
 
 ## What's new?
 
+### v.1.1.3
+  - Fixed feature in v.1.1.2: workspace and buffer should actually be the same thing
+
 ### v.1.1.2: No file size limit! (for Sonic Pi 2.11, still in dev)
   - Previously, sending OSC messages over UDP to the Sonic Pi server directly limited the maximum file size
   - Sonic Pi v.2.11 (still under dev) now supports loading files into the buffer and playing it directly with the /save-and-run-buffer-via-local-file OSC command
   - This feature can be accessed via the command palatte (ctrl-shift-P), but you can create your own keybindings.
 
-### v.1.0.1: Stupid mistake patch
+### v.1.0.1
   - Fixed package names
 
 ### v1.0.0: The fork

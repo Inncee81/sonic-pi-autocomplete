@@ -28,7 +28,7 @@ module.exports = SonicPiAutocomplete =
     fullPath = editor.getPath()
 
     @send '/save-and-run-buffer-via-local-file', 'Atom', 'workspace_9', fullPath, 'workspace_9'
-    atom.notifications.addSuccess "Saved " + editor.getTitle() + " to buffer 6 and ran it"
+    atom.notifications.addSuccess "Saved " + editor.getTitle() + " and running in buffer 10 (hidden)"
 
   stop: ->
     @send '/stop-all-jobs', 'SONIC_PI_CLI'
