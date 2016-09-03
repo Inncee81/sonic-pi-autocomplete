@@ -8,17 +8,21 @@ With this plugin, you can do all the live coding in Atom instead.
 
 ![sonic-pi-atom-screenshot](https://raw.githubusercontent.com/euwbah/sonic-pi-autocomplete/master/screenshot.png)
 
-## Requirements
+### Usage
 
-Sonic Pi needs to be running in the background.
+Start up Sonic Pi or the Sonic Pi server (over UDP), and get live coding in Atom!
+
+Note that the support for executing huge files with the `Play Huge File` command,
+will only work with Sonic Pi 2.11, which is currently yet to be released.
+(You can try compile it from source though, good luck!)
 
 ## Default Key Bindings
 
  Key Binding  | Action                      | Description
 --------------|-----------------------------|-----------------
- `ctrl-r`     | `atom-sonic:play-file`      | Sends content of the currently open buffer to Sonic Pi for instant playback
+ `alt-r`      | `atom-sonic:play-file`      | Sends content of the currently open buffer to Sonic Pi for instant playback
  `ctrl-alt-r` | `atom-sonic:play-selection` | Sends currently selected text to Sonic Pi for instant playback
- `ctrl-s`     | `atom-sonic:stop`           | Tells Sonic Pi to stop all playback
+ `alt-shift-r`| `atom-sonic:stop`           | Tells Sonic Pi to stop all playback
 
 
 
@@ -60,20 +64,16 @@ the typing, and more on the coding.
 but more importantly, it also has snippets which takes the pain out of all those synth
 parameters (not fully implemented yet though!).
 
+
+
 ## What's new?
 
-### v.1.1.3
-  - Fixed feature in v.1.1.2: workspace and buffer should actually be the same thing
-
-### v.1.1.2: No file size limit! (for Sonic Pi 2.11, still in dev)
+### v.1.1: No file size limit! (for Sonic Pi 2.11, still in dev)
   - Previously, sending OSC messages over UDP to the Sonic Pi server directly limited the maximum file size
   - Sonic Pi v.2.11 (still under dev) now supports loading files into the buffer and playing it directly with the /save-and-run-buffer-via-local-file OSC command
-  - This feature can be accessed via the command palatte (ctrl-shift-P), but you can create your own keybindings.
+  - This feature can be accessed via the command palatte (ctrl-shift-P) as `Play Huge File`, but you can create your own keybindings.
 
-### v.1.0.1
-  - Fixed package names
-
-### v1.0.0: The fork
+### v1.0: The fork
   - rkh seems to have stopped development on atom-sonic, so I decided to reincarnate it as sonic-pi-autocomplete
   - Improved autocomplete, now with context sensing
   - Fixed not able to run code, creds to [this](https://github.com/rkh/atom-sonic/compare/master...bengm:master) patch
