@@ -62,6 +62,14 @@ parameters (not fully implemented yet though!).
 
 ## What's new?
 
+### v.1.1.0: No file size limit!
+  - Previously, sending OSC messages over UDP to the Sonic Pi server directly limited the maximum file size
+  - Sonic Pi v.2.11 (still under dev) now supports loading files into the buffer and playing it directly with the /save-and-run-buffer-via-local-file OSC command
+  - This feature can be accessed via the command palatte (ctrl-shift-P), but you can create your own keybindings.
+
+### v.1.0.1: Stupid mistake patch
+  - Fixed package names
+
 ### v1.0.0: The fork
   - rkh seems to have stopped development on atom-sonic, so I decided to reincarnate it as sonic-pi-autocomplete
   - Improved autocomplete, now with context sensing
