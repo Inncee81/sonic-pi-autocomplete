@@ -62,7 +62,7 @@ parameters (not fully implemented yet though!).
 
 ## What's new?
 
-### v.1.1.0: No file size limit!
+### v.1.1.2: No file size limit! (for Sonic Pi 2.11, still in dev)
   - Previously, sending OSC messages over UDP to the Sonic Pi server directly limited the maximum file size
   - Sonic Pi v.2.11 (still under dev) now supports loading files into the buffer and playing it directly with the /save-and-run-buffer-via-local-file OSC command
   - This feature can be accessed via the command palatte (ctrl-shift-P), but you can create your own keybindings.
