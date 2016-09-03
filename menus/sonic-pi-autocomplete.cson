@@ -10,6 +10,10 @@
           'command': 'sonic-pi-autocomplete:play-file'
         },
         {
+          'label': 'Save To Buffer 9 in the GUI and Play'
+          'command': 'sonic-pi-autocomplete:save-and-run-buffer-via-local-file'
+        },
+        {
           'label': 'Play Selection'
           'command': 'sonic-pi-autocomplete:play-selection'
         },

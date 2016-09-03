@@ -9,9 +9,10 @@ module.exports = SonicPiAutocomplete =
   activate: (state) ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add(atom.commands.add 'atom-workspace',
-      'sonic-pi-autocomplete:play-file':      => @play('getText'),
-      'sonic-pi-autocomplete:play-selection': => @play('getSelectedText'),
-      'sonic-pi-autocomplete:stop':           => @stop())
+      'sonic-pi-autocomplete:play-file':                            => @play('getText'),
+      'sonic-pi-autocomplete:play-selection':                       => @play('getSelectedText'),
+      'sonic-pi-autocomplete:stop':                                 => @stop(),
+      'sonic-pi-autocomplete:save-and-run-buffer-via-local-file':   => @save_and_play())
 
   deactivate: ->
     @subscriptions.dispose()
@@ -21,6 +22,13 @@ module.exports = SonicPiAutocomplete =
     source = editor[selector]()
     @send '/run-code', 'SONIC_PI_CLI', source
     atom.notifications.addSuccess "Sent source code to Sonic Pi."
+
+  save_and_play: ->
+    editor = atom.workspace.getActiveTextEditor()
+    fullPath = editor.getPath()
+
+    @send '/save-and-run-buffer-via-local-file', 'SONIC_PI_CLI', 9, fullPath, 'eval'
+    atom.notifications.addSuccess "Saved " + editor.getTitle() + " to buffer 9 and ran it"
 
   stop: ->
     @send '/stop-all-jobs', 'SONIC_PI_CLI'
