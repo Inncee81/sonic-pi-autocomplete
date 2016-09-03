@@ -27,8 +27,8 @@ module.exports = SonicPiAutocomplete =
     editor = atom.workspace.getActiveTextEditor()
     fullPath = editor.getPath()
 
-    @send '/save-and-run-buffer-via-local-file', 'SONIC_PI_CLI', 9, fullPath, 'eval'
-    atom.notifications.addSuccess "Saved " + editor.getTitle() + " to buffer 9 and ran it"
+    @send '/save-and-run-buffer-via-local-file', 'Atom', 'workspace_9', fullPath, 'workspace_9'
+    atom.notifications.addSuccess "Saved " + editor.getTitle() + " to buffer 6 and ran it"
 
   stop: ->
     @send '/stop-all-jobs', 'SONIC_PI_CLI'

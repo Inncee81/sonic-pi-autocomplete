@@ -10,4 +10,4 @@
 'atom-workspace':
   'alt-r': 'sonic-pi-autocomplete:play-file'
   'ctrl-alt-r': 'sonic-pi-autocomplete:play-selection'
-  'alt-shift-s': 'sonic-pi-autocomplete:stop'
+  'alt-shift-r': 'sonic-pi-autocomplete:stop'
