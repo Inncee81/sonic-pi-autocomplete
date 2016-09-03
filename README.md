@@ -16,7 +16,7 @@ Note that the support for executing huge files with the `Play Huge File` command
 will only work with Sonic Pi 2.11, which is currently yet to be released.
 (You can try compile it from source though, good luck!)
 
-## Default Key Bindings
+### Default Key Bindings
 
  Key Binding  | Action                      | Description
 --------------|-----------------------------|-----------------
@@ -64,7 +64,31 @@ the typing, and more on the coding.
 but more importantly, it also has snippets which takes the pain out of all those synth
 parameters (not fully implemented yet though!).
 
+#### Full list of autocomplete features:
+##### Names:
+  - All Synth symbols
+  - All FX symbols
+  - All Sample symbols
 
+##### Sonic Pi Language
+  - Sonic Pi functions (e.g. `play`, `use_bpm`) (partially supported)
+  - Synth Play / Control Parameters + Parameter control type (partially supported)
+
+##### Smart Snippets
+  - `adsr`
+    - attack, decay, sustain, release
+  - `asr`
+    - attack, sustain, release`
+  - `pluck`
+    - `sustain: 0`, release
+  - `slide`
+    - adds a `_slide` setting for the parameter just before the cursor
+  - `slidecurve`
+    - same as `slide` but also adds a `_slide_curve` parameter
+  - `slideshape`
+    - same as `slide` but also adds a `_slide_shape` parameter
+  - `step`, `linear`, `welch`, `sine`, `squared`, `cubed`
+    - resolves to the integer representing the shape of the slide
 
 ## What's new?
 
@@ -89,3 +113,4 @@ parameters (not fully implemented yet though!).
   - Fully implement all possible synth params, and organize them into Slide, Controllable, or static_synth_params
   - Do the same thing for all FX params, which apparently does not have any autocomplete features so far
     - FX params should easily be able to have context sensing, as the params are always placed
+  - Eventually, use grammar

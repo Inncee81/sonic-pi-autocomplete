@@ -75,7 +75,8 @@ module.exports = provider =
       ":vinyl_backspin", ":vinyl_hiss", ":vinyl_rewind", ":vinyl_scratch"]
 
     snippets: [
-      "adsr", "asr", "slide", "slideshape", "slidecurve"
+      "adsr", "asr", "pluck"
+      "slide", "slideshape", "slidecurve"
     ]
 
     placeholders:
@@ -229,21 +230,27 @@ module.exports = provider =
                 displayText: 'use_synth'
             else if item == "adsr"
               suggestions.push
-                snippet: 'attack: ${1:0.01}, decay: ${2:0}, sustain: ${3:1}, release: ${4:0.1}'
+                snippet: 'attack: ${1:0.01}, decay: ${2:0}, sustain: ${3:1}, release: ${4:0.1}${5}'
                 typ: 'snippet'
                 rightLabel: 'Sonic Pi Snippet'
                 displayText: 'ADSR parameters'
             else if item == "asr"
               suggestions.push
-                snippet: 'attack: ${1:0.01}, sustain: ${2:1}, release: ${3:0.1}'
+                snippet: 'attack: ${1:0.01}, sustain: ${2:1}, release: ${3:0.1}${4}'
                 typ: 'snippet'
                 rightLabel: 'Sonic Pi Snippet'
                 displayText: 'ASR parameters'
+            else if item == "pluck"
+              suggestions.push
+                snippet: 'sustain: 0, release: ${1:0.25}${2}'
+                typ: 'snippet'
+                rightLabel: 'Sonic Pi Snippet'
+                displayText: 'Plucked Envelope'
 
             else if item == "slide" and num_of_words_before_cursor >= 4
               affectedParameter = third_last_word_of_row.substring(0, third_last_word_of_row.length - 1)
               suggestions.push (
-                snippet: affectedParameter + '_slide: ${1:1}'
+                snippet: affectedParameter + '_slide: ${1:1}${2}'
                 typ: 'snippet'
                 rightLabel: 'Sonic Pi Snippet'
                 displayText: 'Param Slide'
@@ -252,7 +259,7 @@ module.exports = provider =
             else if item == "slideshape" and num_of_words_before_cursor >= 4
               affectedParameter = third_last_word_of_row.substring(0, third_last_word_of_row.length - 1)
               suggestions.push (
-                snippet: affectedParameter + '_slide: ${1:1}, ' + affectedParameter + '_slide_shape: ${2:1}'
+                snippet: affectedParameter + '_slide: ${1:1}, ' + affectedParameter + '_slide_shape: ${2:1}${3}'
                 typ: 'snippet'
                 rightLabel: 'Sonic Pi Snippet'
                 displayText: 'Param Slide + Shape'
@@ -261,7 +268,7 @@ module.exports = provider =
             else if item == "slidecurve" and num_of_words_before_cursor >= 4
               affectedParameter = third_last_word_of_row.substring(0, third_last_word_of_row.length - 1)
               suggestions.push (
-                snippet: affectedParameter + '_slide: ${1:1}, ' + affectedParameter + "_slide_curve: ${2:0}"
+                snippet: affectedParameter + '_slide: ${1:1}, ' + affectedParameter + '_slide_curve: ${2:0}${3}'
                 typ: 'snippet'
                 rightLabel: 'Sonic Pi Snippet'
                 displayText: 'Param Slide + Curve'
