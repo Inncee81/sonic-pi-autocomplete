@@ -218,6 +218,14 @@ module.exports = helper =
   # will not be taken into consideration, as the sole purpose of this function
   # is to determine the autocomplete type.
   #
+  # This method would, and should only allow for the determining of the context
+  # of the cursor's position. That is, the ordinal index of the parameter of a
+  # method which the cursor is at, and the name of that method, or,
+  # determining if the coder is typing a sonic pi construct, and allowing for the
+  # appropriate autocompleting suggestions given, say, a particular fx name in a with_fx block header
+  # However, as the concept of negative space applies, the full set of contexts still must apply
+  # in this function, hence the need for recognizing postfix controls, native controls and etc.
+  #
   # If lineType: identifier,
   #   it means that there is only a single non-whitespace token in the line
   #   it doesn't really mean 'identifier', as it could be a function call that
@@ -229,7 +237,7 @@ module.exports = helper =
   #   token without any comma in between.
   #       method: name of the method
   #       params: array of parameter tokens
-  # If lineType:
+  # If lineType: 
   parseCursorContext: (lineObject, bufferPosition) ->
     #"lines" as in a single expression that can span over multiple lines
     linesInRegard = @getLinesInRegard lineObject, bufferPosition
