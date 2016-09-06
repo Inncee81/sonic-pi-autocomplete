@@ -114,6 +114,7 @@ module.exports = provider =
 
       console.log "Current Line: "
       console.log currentLineStr
+      console.log currentLine
 
       helper.parseCursorContext currentLine, bufferPosition
 
