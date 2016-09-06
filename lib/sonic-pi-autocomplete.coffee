@@ -1,5 +1,6 @@
 {CompositeDisposable} = require 'atom'
 osc                   = require 'node-osc'
+#first-mate            = require 'first-mate'
 provider              = require './sonic-pi-autocompleter'
 
 module.exports = SonicPiAutocomplete =
@@ -12,7 +13,7 @@ module.exports = SonicPiAutocomplete =
       'sonic-pi-autocomplete:play-file':                            => @play('getText'),
       'sonic-pi-autocomplete:play-selection':                       => @play('getSelectedText'),
       'sonic-pi-autocomplete:stop':                                 => @stop(),
-      'sonic-pi-autocomplete:save-and-run-buffer-via-local-file':   => @save_and_play())
+      'sonic-pi-autocomplete:play-huge-file':                       => @save_and_play())
 
   deactivate: ->
     @subscriptions.dispose()
@@ -25,10 +26,12 @@ module.exports = SonicPiAutocomplete =
 
   save_and_play: ->
     editor = atom.workspace.getActiveTextEditor()
+    editor.save();
     fullPath = editor.getPath()
+    title = editor.getTitle()
 
-    @send '/save-and-run-buffer-via-local-file', 'Atom', 'workspace_9', fullPath, 'workspace_9'
-    atom.notifications.addSuccess "Saved " + editor.getTitle() + " and running in buffer 10 (hidden)"
+    @send '/save-and-run-buffer-via-local-file', 'Atom', title, fullPath, title
+    atom.notifications.addSuccess "Saved " + title + " and running in buffer 10 (hidden)"
 
   stop: ->
     @send '/stop-all-jobs', 'SONIC_PI_CLI'

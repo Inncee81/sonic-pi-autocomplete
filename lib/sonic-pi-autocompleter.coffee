@@ -1,3 +1,6 @@
+helper = require './helper'
+data = require './data'
+
 module.exports = provider =
   selector: '.source.ruby, .symbol.ruby'
   inclusionPriority: 0
@@ -88,21 +91,29 @@ module.exports = provider =
         "squared": '6'
         "cubed": '7'
 
-
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix, activatedManually}) ->
     return new Promise (resolve) =>
       suggestions = []
 
-      #doin' some destructuring
-      [topLevelDescriptor, ..., tokenDescriptor] = scopeDescriptor.getScopesArray()
-      prev_words_on_same_row = editor.getTextInBufferRange([[bufferPosition.row, 0], bufferPosition]).trim().split(/\s+/)
+      grammar = editor.getGrammar();
+
+      tokens = grammar.tokenizeLines(editor.getText());
+
+      prev_words_on_same_row = helper.splitWords editor.getTextInBufferRange([[bufferPosition.row, 0], bufferPosition]).trim()
       [first_word_of_row, ..., preceding_word_from_cursor] = prev_words_on_same_row
       [..., third_last_word_of_row, secondlast, last] = prev_words_on_same_row
       num_of_words_before_cursor = prev_words_on_same_row.length
 
       #console.log "DEBUG>> Prefix: " + prefix
       #console.log "DEBUG>> First: " + first_word_of_row + ", Preceding: " + preceding_word_from_cursor
-      console.log "DEBUG>> Third Last: " + third_last_word_of_row
+      #console.log "DEBUG>> Third Last: " + third_last_word_of_row
+
+      # Note that currentLine is an object containing tokens, linesPreceeded, and linesSuffixed
+      currentLine = helper.getLine(tokens, bufferPosition.row)
+      currentLineStr = helper.convertLineTokensToString currentLine.tokens
+
+      console.log "Current Line: "
+      console.log currentLineStr
 
       #Expecting Sample
       if first_word_of_row == "sample" and preceding_word_from_cursor != "sample"

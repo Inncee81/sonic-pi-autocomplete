@@ -11,7 +11,7 @@
         },
         {
           'label': 'Play Huge File'
-          'command': 'sonic-pi-autocomplete:save-and-run-buffer-via-local-file'
+          'command': 'sonic-pi-autocomplete:play-huge-file'
         },
         {
           'label': 'Play Selection'
