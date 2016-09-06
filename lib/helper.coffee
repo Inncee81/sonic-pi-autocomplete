@@ -127,32 +127,48 @@ module.exports = helper =
     linesPreceeded: linesPreceeded
     linesSuffixed: linesSuffixed
 
-    # Parses a single 'line' (can be across multiple new-lines)
-    # This method is useful for the understanding of context
-    parseLine: (lines) ->
-      undefined
+  # Parses a single 'line' (can be across multiple new-lines)
+  # This method is useful for the understanding of context
+  parseLine: (lines) ->
+    undefined
 
-    getTokenLength: (token) ->
-      token.value.length()
+  getTokenLength: (token) ->
+    token.value.length
 
-    # This method will be used for determining what function / control
-    # the cursor is giving parameters to. Useful for autocomplete
-    # lineObject: the object returned from the getLine() command
-    parseCursorContext: (lineObject, bufferPosition) ->
-      lines = lineObject.tokens
-      linesPreceedingCursor = lineObject.linesPreceeded
-      linesInRegard = []
+  getLinesInRegard: (lineObject, bufferPosition) ->
+    lines = lineObject.tokens
+    linesPreceedingCursor = lineObject.linesPreceeded
+    linesInRegard = []
 
-      #fill up linesInRegard with all necessary preceeding lines
-      for i in [0...linesPreceedingCursor] #exclusive range is three dots so 0...0 is empty
-        linesInRegard.push lines[i]
+    #fill up linesInRegard with all necessary preceeding lines
+    for i in [0...linesPreceedingCursor] #exclusive range is three dots so 0...0 is empty
+      linesInRegard.push lines[i]
 
-      #find out how many tokens of the line at bufferPosition.row is in regard
-      currentLineTokens = lines[linesPreceedingCursor]
-      currentCumulativeColumn = 0;
-      targetColumn = bufferPosition.column
-      for token in currentLineTokens
-        currentCumulativeColumn += getTokenLength token
+    #find out how many tokens of the line at bufferPosition.row is in regard
+    currentLineTokens = lines[linesPreceedingCursor]
+    currentCumulativeColumn = 0;
+    targetColumn = bufferPosition.column
+    linesToAddInRegard = []
+    for token in currentLineTokens
+      currentCumulativeColumn += @getTokenLength token
+      linesToAddInRegard.push token
+      if currentCumulativeColumn is targetColumn
+        break
+    linesInRegard.push linesToAddInRegard
 
-      console.log currentCumulativeColumn + " / " + targetColumn
-      
+    linesInRegard
+
+  # Used only for basic shallow parsing at cursor context
+  flatten: (linesInRegard) ->
+    singleDepthTokens = []
+    for line in linesInRegard
+      singleDepthTokens.push token for token in line
+
+    singleDepthTokens
+
+  # This method will be used for determining what function / control
+  # the cursor is giving parameters to. Useful for autocomplete
+  # lineObject: the object returned from the getLine() command
+  parseCursorContext: (lineObject, bufferPosition) ->
+    #"lines" as in a single expression that can span over multiple lines
+    linesInRegard = @getLinesInRegard lineObject, bufferPosition

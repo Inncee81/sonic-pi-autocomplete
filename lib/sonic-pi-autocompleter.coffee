@@ -115,6 +115,8 @@ module.exports = provider =
       console.log "Current Line: "
       console.log currentLineStr
 
+      helper.parseCursorContext currentLine, bufferPosition
+
       #Expecting Sample
       if first_word_of_row == "sample" and preceding_word_from_cursor != "sample"
         for item in @completions.sample when item.substring(1, prefix.length + 1) == prefix

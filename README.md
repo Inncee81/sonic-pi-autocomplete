@@ -105,7 +105,7 @@ parameters (not fully implemented yet though!).
   - Updated all synth names, samples, fx to the latest release: Sonic Pi v2.10
   - Added placeholders for things like `note_slide_shape`, because memorizing `0: Step, 1: Linear, etc...` won't cut
 
-## TODO:
+## Currently In Progress:
   - Make sure it does as one would expect
     - Making the autocomplete dialog pop up automatically when entering synth parameters
     - Auto formatting of snippets and autocompletes, especially for CSV synth and fx params.
