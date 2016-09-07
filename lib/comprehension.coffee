@@ -1,9 +1,9 @@
 # A very trivial module for 'parsing' ruby
-# Still a work in progress!
+# Still a work in progress! This will only be used in the far, far future.
 
 module.exports = Comprehension =
 
-  
+
 
   # These are Sonic Pi-specific structures
   syntaxBlockPrecursors: [

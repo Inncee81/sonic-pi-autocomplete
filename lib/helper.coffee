@@ -14,6 +14,8 @@ module.exports = helper =
   ]
 
   postfixControlKeywords: [
+    "if"
+    "unless"
     "until"
     "while"
   ]
@@ -218,26 +220,20 @@ module.exports = helper =
   # will not be taken into consideration, as the sole purpose of this function
   # is to determine the autocomplete type.
   #
-  # This method would, and should only allow for the determining of the context
-  # of the cursor's position. That is, the ordinal index of the parameter of a
-  # method which the cursor is at, and the name of that method, or,
-  # determining if the coder is typing a sonic pi construct, and allowing for the
-  # appropriate autocompleting suggestions given, say, a particular fx name in a with_fx block header
-  # However, as the concept of negative space applies, the full set of contexts still must apply
-  # in this function, hence the need for recognizing postfix controls, native controls and etc.
+  # IMPORTANT: when the cursor is at a Sonic Pi block header e.g. with_fx,
+  # it is actually a function-call, and will be treated by this function as such.
   #
-  # If lineType: identifier,
-  #   it means that there is only a single non-whitespace token in the line
-  #   it doesn't really mean 'identifier', as it could be a function call that
-  #   has yet to have any arguments, or none at all.
-  #       identifier: the name of the identifier
-  # If lineType: function-call,
-  #   delimited by either a token with scope 'support.function.kernel.ruby' or a token with no
-  #   special scope, but placed beside a non-operator (not isOperatorScope), and non-whitespace
-  #   token without any comma in between.
-  #       function: name of the function
-  #       params: array of parameter tokens
-  # If lineType:
+  # lineType: function-call
+  #       functionName: Name of the function that is being called
+  #       params: Array of parameters. Each parameter is an array of tokens
+  # lineType: postfix-control
+  #       postfixType: The token of the keyword delimiting the postfix
+  #       postfixExpression: Tokens in the postfix expression
+  # lineType: expression
+  #       tokens: The tokens of the expression
+  # lineType: "control-block-header"
+  #       blockType: The type of the control block (e.g. if, for, while)
+  #       blockExpression: The tokens suffixing the control keyword.
   parseCursorContext: (lineObject, bufferPosition) ->
     #"lines" as in a single expression that can span over multiple lines
     linesInRegard = @getLinesInRegard lineObject, bufferPosition
@@ -247,12 +243,19 @@ module.exports = helper =
 
     determiningToken = @getFirstNonWhitespaceToken tokens
 
+    if determiningToken in @syntaxBlockCreators
+      returnable.lineType = "control-block-header"
+      returnable.blockType = tokens.slice(0, 1)
+      returnable.blockExpression = tokens.slice(1)
+      return returnable
+
     # Can be postfix controls, or method calls
     # postfix controls are delimited by a
     parenDepth = 0; brackDepth = 0; braceDepth = 0
 
     maybeListOfParams = [] # Array containing the contents of comma separated expressions
     parameterTokensToAdd = [] # Contains the tokens for the current expression (see above)
+    doEndBlockVariables = [] # Contains tokens of do..end block variables
     CHECK_FOR_FUNCTION_CALL_USING_PAREN = false
     for token in tokens.slice().reverse()     # BACKWARDS
       if "punctuation.section.function.ruby" in token.scopes
@@ -300,13 +303,14 @@ module.exports = helper =
           continue
 
         # POSTFIX
-        else if "keyword.control.ruby" in token.scopes and token.value in postfixControlKeywords
+        else if "keyword.control.ruby" in token.scopes and token.value in @postfixControlKeywords
           postfixTokensList = []
           postfixTokensList = parameterTokensToAdd.slice()
           for commaSeparatedSegment in maybeListOfParams # Just in case something made it think this way
             postfixTokensList.push segmentToken for segmentToken in commaSeparatedSegment
           returnable.lineType = "postfix-control"
-          returnable.postfixTokensList = postfixTokensList
+          returnable.postfixExpression = postfixTokensList
+          returnable.postfixType = token
           return returnable
 
         # METHOD
@@ -326,9 +330,16 @@ module.exports = helper =
               returnable.lineType = "function-call"
               returnable.functionName = token.value
               returnable.params = []
-              returnable.params.push parameterTokensToAdd.slice()
+              maybeListOfParams.unshift parameterTokensToAdd.slice()
               returnable.params.push param for param in maybeListOfParams
+
               return returnable
+
+        # do Keyword
+        else if "keyword.control.start-block.ruby" in token.scopes # do keyword
+          returnable.lineType = "block-do"
+          returnable.variables = doEndBlockVariables
+          return returnable
 
       else
         if parenDepth is -1
@@ -348,8 +359,9 @@ module.exports = helper =
           returnable.values = CSV
           return returnable
 
-
-
       parameterTokensToAdd.unshift token
+
+      if "variable.other.block.ruby" in token.scopes
+        doEndBlockVariables.push token
 
     returnable
