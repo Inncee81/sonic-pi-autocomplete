@@ -246,89 +246,110 @@ module.exports = helper =
     returnable = {}
 
     determiningToken = @getFirstNonWhitespaceToken tokens
-    returnable.name = determiningToken.value
 
-    if determiningToken in syntaxBlockCreators
-      returnable.lineType = "ruby-control" # Standard Ruby Syntax
-    else if determiningToken in syntaxBlockPrecursors
-      returnable.lineType = "sonicpi-control" # Sonic Pi special do...end blocks
-    else if @tokenScopeStartsWith tokens[1], "keyword.operator.assignment"
-      returnable.lineType = "assignment"
-    else
-      # Can be postfix controls, or method calls
-      # postfix controls are delimited by a
-      parenDepth = 0; brackDepth = 0; braceDepth = 0
+    # Can be postfix controls, or method calls
+    # postfix controls are delimited by a
+    parenDepth = 0; brackDepth = 0; braceDepth = 0
 
-      maybeListOfParams = [] # Array containing the contents of comma separated expressions
-      parameterTokensToAdd = [] # Contains the tokens for the current expression (see above)
-      CHECK_FOR_FUNCTION_CALL_USING_PAREN = false
-      for token in tokens.split().reverse()     # BACKWARDS
-        if "punctuation.section.function.ruby" in token.scopes
-          if token.value.trim() is "("
-            parenDepth--
-          else if token.value.trim() is ")"
-            parenDepth++
-        if "punctuation.section.array.begin.ruby" in token.scopes
-          brackDepth--
-        else if "punctuation.section.array.end.ruby" in token.scopes
-          brackDepth++
-        else if "punctuation.section.scope.begin.ruby" in token.scopes
-          braceDepth--
-        else if "punctuation.section.scope.end.ruby" in token.scopes
-          braceDepth++
+    maybeListOfParams = [] # Array containing the contents of comma separated expressions
+    parameterTokensToAdd = [] # Contains the tokens for the current expression (see above)
+    CHECK_FOR_FUNCTION_CALL_USING_PAREN = false
+    for token in tokens.slice().reverse()     # BACKWARDS
+      if "punctuation.section.function.ruby" in token.scopes
+        if token.value.trim() is "("
+          parenDepth--
+        else if token.value.trim() is ")"
+          parenDepth++
+      if "punctuation.section.array.begin.ruby" in token.scopes
+        brackDepth--
+      else if "punctuation.section.array.end.ruby" in token.scopes
+        brackDepth++
+      else if "punctuation.section.scope.begin.ruby" in token.scopes
+        braceDepth--
+      else if "punctuation.section.scope.end.ruby" in token.scopes
+        braceDepth++
 
-        if parenDepth is brackDepth is braceDepth is 0 # top level
-          if "punctuation.separator.object.ruby" in token.scopes # comma
-            maybeListOfParams.unshift parameterTokensToAdd # Add tokens that have been collected in between commas
-            parameterTokensToAdd = []
-            continue
-          else if "keyword.control.ruby" in token.scopes and token.value in postfixControlKeywords
-            postfixTokensList = []
-            postfixTokensList = parameterTokensToAdd.split()
-            for commaSeparatedSegment in maybeListOfParams # Just in case something made it think this way
-              postfixTokensList.push token for token in commaSeparatedSegment
-            returnable.lineType = "postfix-control"
-            returnable.postfixTokensList = postfixTokensList
-            return returnable
-          else if token.scopes.length is 1 or "support.function.kernel.ruby" in token.scopes
-            followingToken = @getFirstNonWhitespaceToken parameterTokensToAdd
-            if not @isOperatorScope followingToken and not "punctuation.separator.object.ruby" in followingToken.scopes
+      # PAREN METHOD
+      if CHECK_FOR_FUNCTION_CALL_USING_PAREN # f(x) type of function call
+        followingToken = @getFirstNonWhitespaceToken parameterTokensToAdd
+        console.log "MAYBE PAREN FUNCTION CALL"
+        console.log "Following Token: "
+        console.log followingToken
+        if (followingToken isnt undefined) and
+           (token.scopes.length is 1 or "support.function.kernel.ruby" in token.scopes) and
+           ("punctuation.section.function.ruby" in followingToken.scopes and followingToken.value.trim() is "("  and # Function call with brackets
+               parenDepth is -1 and brackDepth is braceDepth is 0)
+          console.log "PAREN FUNCTION CALL"
+          returnable.lineType = "function-call"
+          returnable.functionName = token.value
+          returnable.params = []
+          returnable.params.push parameterTokensToAdd.slice(1)
+          returnable.params.push param for param in maybeListOfParams
+          return returnable
+        else
+          returnable.lineType = "expression"
+          returnable.tokens = parameterTokensToAdd.slice()
+          for segment in maybeListOfParams
+            returnable.tokens.push segmentToken for segmentToken in segment
+
+      if parenDepth is brackDepth is braceDepth is 0 # top level
+        # COMMA
+        if "punctuation.separator.object.ruby" in token.scopes
+          maybeListOfParams.unshift parameterTokensToAdd # Add tokens that have been collected in between commas
+          parameterTokensToAdd = []
+          continue
+
+        # POSTFIX
+        else if "keyword.control.ruby" in token.scopes and token.value in postfixControlKeywords
+          postfixTokensList = []
+          postfixTokensList = parameterTokensToAdd.slice()
+          for commaSeparatedSegment in maybeListOfParams # Just in case something made it think this way
+            postfixTokensList.push segmentToken for segmentToken in commaSeparatedSegment
+          returnable.lineType = "postfix-control"
+          returnable.postfixTokensList = postfixTokensList
+          return returnable
+
+        # METHOD
+        else if (not @whitespaceToken token) and
+                (token.scopes.length is 1 or "support.function.kernel.ruby" in token.scopes)
+          followingToken = @getFirstNonWhitespaceToken parameterTokensToAdd
+          if (followingToken isnt undefined) and
+             (not (@isOperatorScope followingToken)) and
+             (not ("punctuation.separator.object.ruby" in followingToken.scopes))
+            if "punctuation.section.function.ruby" in followingToken.scopes and followingToken.value.trim() is "("
+              returnable.lineType = "expression"
+              parameterTokensToAdd.unshift token
+              returnable.tokens = parameterTokensToAdd.slice()
+              for segment in maybeListOfParams
+                returnable.tokens.push segmentToken for segmentToken in segment
+            else
               returnable.lineType = "function-call"
               returnable.functionName = token.value
               returnable.params = []
-              returnable.params.push parameterTokensToAdd.split()
+              returnable.params.push parameterTokensToAdd.slice()
               returnable.params.push param for param in maybeListOfParams
               return returnable
 
-        else
-          if parenDepth is -1
-            CHECK_FOR_FUNCTION_CALL_USING_PAREN = true
-          else if brackDepth < 0
-            CSV = []
-            CSV.push parameterTokensToAdd.split()
-            CSV.push value for value in maybeListOfParams
-            returnable.lineType = "array"
-            returnable.values = CSV
-            return returnable
-          else if braceDepth < 0
-            CSV = []
-            CSV.push parameterTokensToAdd.split()
-            CSV.push value for value in maybeListOfParams
-            returnable.lineType = "hash"
-            returnable.values = CSV
-            return returnable
+      else
+        if parenDepth is -1
+          CHECK_FOR_FUNCTION_CALL_USING_PAREN = true
+        else if brackDepth < 0
+          CSV = []
+          CSV.push parameterTokensToAdd.slice()
+          CSV.push value for value in maybeListOfParams
+          returnable.lineType = "array"
+          returnable.values = CSV
+          return returnable
+        else if braceDepth < 0
+          CSV = []
+          CSV.push parameterTokensToAdd.slice()
+          CSV.push value for value in maybeListOfParams
+          returnable.lineType = "hash"
+          returnable.values = CSV
+          return returnable
 
-        if CHECK_FOR_FUNCTION_CALL_USING_PAREN # f(x) type of function call
-          if (token.scopes.length is 1 or "support.function.kernel.ruby" in token.scopes) and
-             ("punctuation.section.function.ruby" in followingToken and followingToken.value.trim() is "("  and # Function call with brackets
-                 parenDepth is -1 and brackDepth is braceDepth is 0)
-            returnable.lineType = "function-call"
-            returnable.functionName = token.value
-            returnable.params = []
-            returnable.params.push parameterTokensToAdd.split()
-            returnable.params.push param for param in maybeListOfParams
-            return returnable
 
-        parameterTokensToAdd.unshift token
+
+      parameterTokensToAdd.unshift token
 
     returnable

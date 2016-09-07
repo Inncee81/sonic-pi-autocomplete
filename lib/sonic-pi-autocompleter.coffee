@@ -116,7 +116,9 @@ module.exports = provider =
       console.log currentLineStr
       console.log currentLine
 
-      helper.parseCursorContext currentLine, bufferPosition
+      console.log "Cursor context:"
+      cursorContext = helper.parseCursorContext currentLine, bufferPosition
+      console.log cursorContext
 
       #Expecting Sample
       if first_word_of_row == "sample" and preceding_word_from_cursor != "sample"
