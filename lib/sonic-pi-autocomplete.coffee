@@ -2,12 +2,14 @@
 osc                   = require 'node-osc'
 #first-mate            = require 'first-mate'
 provider              = require './sonic-pi-autocompleter'
+data                  = require './data'
 
 module.exports = SonicPiAutocomplete =
   subscriptions: null
   provide: -> provider
 
   activate: (state) ->
+    data.initialiseDatabase()
     @subscriptions = new CompositeDisposable
     @subscriptions.add(atom.commands.add 'atom-workspace',
       'sonic-pi-autocomplete:play-file':                            => @play('getText'),
