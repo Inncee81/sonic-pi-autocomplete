@@ -593,12 +593,10 @@ module.exports = helper =
 
   # variables: an array of variables, each entity containing an array of tokens attributed to that variable
   parseDoBlockVariables: (lineExpr) ->
-    returnable = {
-      variables: []
-    }
+    returnable = []
     for token in lineExpr
       if "variable.other.block.ruby" in token.scopes
-        returnable.variables.push token
+        returnable.push token
 
     returnable
 
@@ -772,7 +770,7 @@ module.exports = helper =
         else if lineData.blockType.value.trim() is "with_fx"
           if lineData.variables isnt undefined and lineData.variables.length > 0
             fxInstances.push({
-              identifier: @convertTokensArrayToString(lineData.variables[0]).trim()
+              identifier: lineData.variables[0].value.trim()
               fxType: @convertTokensArrayToString(lineData.functionData.params[0]).trim()
             })
       else if lineData.lineType is "assignment"

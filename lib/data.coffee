@@ -998,59 +998,59 @@ module.exports = data =
     ]
     fx: [
       {
-        name: ':band_eq'
+        param: ':band_eq'
         params: [
-          { name: 'freq', slide: true }
-          { name: 'res', slide: true }
-          { name: 'db', slide: true }
+          { param: 'freq', slide: true }
+          { param: 'res', slide: true }
+          { param: 'db', slide: true }
         ]
       }
       {
-        name: ':bitcrusher'
+        param: ':bitcrusher'
         params: [
-          { name: 'sample_rate', slide: true }
-          { name: 'bits', slide: true }
-          { name: 'cutoff', slide: true }
+          { param: 'sample_rate', slide: true }
+          { param: 'bits', slide: true }
+          { param: 'cutoff', slide: true }
         ]
       }
       {
-        name: ':bpf'
+        param: ':bpf'
         params: [
-          { name: 'centre', slide: true }
-          { name: 'res', slide: true }
+          { param: 'centre', slide: true }
+          { param: 'res', slide: true }
         ]
       }
       {
-        name: ':compressor'
+        param: ':compressor'
         params: [
-          { name: 'threshold', slide: true }
-          { name: 'clamp_time', slide: true }
-          { name: 'slope_above', slide: true }
-          { name: 'slope_below', slide: true }
-          { name: 'relax_time', slide: true }
+          { param: 'threshold', slide: true }
+          { param: 'clamp_time', slide: true }
+          { param: 'slope_above', slide: true }
+          { param: 'slope_below', slide: true }
+          { param: 'relax_time', slide: true }
         ]
       }
       {
-        name: ':distortion'
+        param: ':distortion'
         params: [
-          { name: 'distort', slide: true }
+          { param: 'distort', slide: true }
         ]
       }
       {
-        name: ':echo'
+        param: ':echo'
         params: [
-          { name: 'phase', slide: true }
-          { name: 'decay', slide: true }
-          { name: 'max_phase', static: true }
+          { param: 'phase', slide: true }
+          { param: 'decay', slide: true }
+          { param: 'max_phase', static: true }
         ]
       }
       {
-        name: ':flanger'
+        param: ':flanger'
         params: [
-          { name: 'phase', slide: true }
-          { name: 'phase_offset', static: true }
+          { param: 'phase', slide: true }
+          { param: 'phase_offset', static: true }
           {
-            name: 'wave'
+            param: 'wave'
             control: true
             waveMapping: {
               "saw":      0
@@ -1060,148 +1060,148 @@ module.exports = data =
               "cubic":    4
             }
           }
-          { name: 'invert_wave', control: true }
-          { name: 'stereo_invert_wave', control: true }
-          { name: 'delay', slide: true }
-          { name: 'max_delay', static: true }
-          { name: 'depth', slide: true }
-          { name: 'decay', slide: true }
-          { name: 'feedback', slide: true }
-          { name: 'invert_flange', control: true }
+          { param: 'invert_wave', control: true }
+          { param: 'stereo_invert_wave', control: true }
+          { param: 'delay', slide: true }
+          { param: 'max_delay', static: true }
+          { param: 'depth', slide: true }
+          { param: 'decay', slide: true }
+          { param: 'feedback', slide: true }
+          { param: 'invert_flange', control: true }
         ]
       }
       {
-        name: ':gverb'
+        param: ':gverb'
         params: [
-          { name: 'spread', slide: true }
-          { name: 'damp', slide: true }
-          { name: 'pre_damp', slide: true }
-          { name: 'dry', slide: true }
-          { name: 'room', control: true }
-          { name: 'release', control: true }
-          { name: 'ref_level', control: true }
-          { name: 'tail_level', control: true }
+          { param: 'spread', slide: true }
+          { param: 'damp', slide: true }
+          { param: 'pre_damp', slide: true }
+          { param: 'dry', slide: true }
+          { param: 'room', control: true }
+          { param: 'release', control: true }
+          { param: 'ref_level', control: true }
+          { param: 'tail_level', control: true }
         ]
       }
       {
-        name: ':hpf'
+        param: ':hpf'
         params: [
-          { name: 'cutoff', slide: true }
+          { param: 'cutoff', slide: true }
         ]
       }
       {
-        name: ':ixi_techno'
+        param: ':ixi_techno'
         params: [
-          { name: 'phase', slide: true }
-          { name: 'phase_offset', static: true }
-          { name: 'cutoff_min', slide: true }
-          { name: 'cutoff_max', slide: true }
-          { name: 'res', slide: true }
+          { param: 'phase', slide: true }
+          { param: 'phase_offset', static: true }
+          { param: 'cutoff_min', slide: true }
+          { param: 'cutoff_max', slide: true }
+          { param: 'res', slide: true }
         ]
       }
       {
-        name: ':krush'
+        param: ':krush'
         params: [
-          { name: 'gain', slide: true }
-          { name: 'cutoff', slide: true }
-          { name: 'res', slide: true }
+          { param: 'gain', slide: true }
+          { param: 'cutoff', slide: true }
+          { param: 'res', slide: true }
         ]
       }
       {
         # This one is special, only has :amp
-        name: ':level'
+        param: ':level'
         params: []
       }
       {
-        name: ':lpf'
+        param: ':lpf'
         params: [
-          { name: 'cutoff', slide: true }
+          { param: 'cutoff', slide: true }
         ]
       }
       {
-        name: ':mono'
+        param: ':mono'
         params: [
-          { name: 'pan', slide: true }
+          { param: 'pan', slide: true }
         ]
       }
       {
-        name: ':nbpf'
+        param: ':nbpf'
         params: [
-          { name: 'centre', slide: true }
-          { name: 'res', slide: true }
+          { param: 'centre', slide: true }
+          { param: 'res', slide: true }
         ]
       }
       {
-        name: ':nhpf'
+        param: ':nhpf'
         params: [
-          { name: 'cutoff', slide: true }
+          { param: 'cutoff', slide: true }
         ]
       }
       {
-        name: ':nlpf'
+        param: ':nlpf'
         params: [
-          { name: 'cutoff', slide: true }
+          { param: 'cutoff', slide: true }
         ]
       }
       {
-        name: ':normaliser'
+        param: ':normaliser'
         params: [
-          { name: 'level', slide: true }
+          { param: 'level', slide: true }
         ]
       }
       {
-        name: ':nrbpf'
+        param: ':nrbpf'
         params: [
-          { name: 'centre', slide: true }
-          { name: 'res', slide: true }
+          { param: 'centre', slide: true }
+          { param: 'res', slide: true }
         ]
       }
       {
-        name: ':nrlpf'
+        param: ':nrlpf'
         params: [
-          { name: 'cutoff', slide: true }
-          { name: 'res', slide: true }
+          { param: 'cutoff', slide: true }
+          { param: 'res', slide: true }
         ]
       }
       {
-        name: ':nrlpf'
+        param: ':nrlpf'
         params: [
-          { name: 'cutoff', slide: true }
-          { name: 'res', slide: true }
+          { param: 'cutoff', slide: true }
+          { param: 'res', slide: true }
         ]
       }
       {
-        name: ':octaver'
+        param: ':octaver'
         params: [
-          { name: 'super_amp', slide: true }
-          { name: 'sub_amp', slide: true }
-          { name: 'subsub_amp', slide: true }
+          { param: 'super_amp', slide: true }
+          { param: 'sub_amp', slide: true }
+          { param: 'subsub_amp', slide: true }
         ]
       }
       {
-        name: ':octaver'
+        param: ':octaver'
         params: [
-          { name: 'super_amp', slide: true }
-          { name: 'sub_amp', slide: true }
-          { name: 'subsub_amp', slide: true }
+          { param: 'super_amp', slide: true }
+          { param: 'sub_amp', slide: true }
+          { param: 'subsub_amp', slide: true }
         ]
       }
       {
-        name: ':pan'
+        param: ':pan'
         params: [
-          { name: 'pan', slide: true }
+          { param: 'pan', slide: true }
         ]
       }
       {
-        name: ':panslicer'
+        param: ':panslicer'
         params: [
-          { name: 'phase', slide: true }
-          { name: 'amp_min', slide: true }
-          { name: 'amp_max', slide: true }
-          { name: 'pulse_width', slide: true }
-          { name: 'phase_offset', static: true }
+          { param: 'phase', slide: true }
+          { param: 'amp_min', slide: true }
+          { param: 'amp_max', slide: true }
+          { param: 'pulse_width', slide: true }
+          { param: 'phase_offset', static: true }
           {
-            name: 'wave'
+            param: 'wave'
             control: true
             waveMapping: {
               "saw": 0
@@ -1210,67 +1210,67 @@ module.exports = data =
               "sine": 3
             }
           }
-          { name: 'invert_wave', control: true }
-          { name: 'probability', slide: true }
-          { name: 'prob_pos', slide: true }
-          { name: 'seed', static: true }
-          { name: 'smooth', slide: true }
-          { name: 'smooth_up', slide: true }
-          { name: 'smooth_down', slide: true }
-          { name: 'pan_min', slide: true }
-          { name: 'pan_max', slide: true }
+          { param: 'invert_wave', control: true }
+          { param: 'probability', slide: true }
+          { param: 'prob_pos', slide: true }
+          { param: 'seed', static: true }
+          { param: 'smooth', slide: true }
+          { param: 'smooth_up', slide: true }
+          { param: 'smooth_down', slide: true }
+          { param: 'pan_min', slide: true }
+          { param: 'pan_max', slide: true }
         ]
       }
       {
-        name: ':pitch_shift'
+        param: ':pitch_shift'
         params: [
-          { name: 'window_size', slide: true }
-          { name: 'pitch', slide: true }
-          { name: 'pitch_dis', slide: true }
-          { name: 'time_dis', slide: true }
+          { param: 'window_size', slide: true }
+          { param: 'pitch', slide: true }
+          { param: 'pitch_dis', slide: true }
+          { param: 'time_dis', slide: true }
         ]
       }
       {
-        name: ':rbpf'
+        param: ':rbpf'
         params: [
-          { name: 'centre', slide: true }
-          { name: 'res', slide: true }
+          { param: 'centre', slide: true }
+          { param: 'res', slide: true }
         ]
       }
       {
-        name: ':reverb'
+        param: ':reverb'
         params: [
-          { name: 'room', slide: true }
-          { name: 'damp', slide: true }
+          { param: 'room', slide: true }
+          { param: 'damp', slide: true }
         ]
       }
       {
-        name: ':rbpf'
+        param: ':rbpf'
         params: [
-          { name: 'cutoff', slide: true }
-          { name: 'res', slide: true }
+          { param: 'cutoff', slide: true }
+          { param: 'res', slide: true }
         ]
       }
       {
-        name: ':ring_mod'
+        param: ':ring_mod'
         params: [
-          { name: 'freq', slide: true }
-          { name: 'mod_amp', slide: true }
+          { param: 'freq', slide: true }
+          { param: 'mod_amp', slide: true }
         ]
       }
       {
-        name: ':rbpf'
+        param: ':rbpf'
         params: [
-          { name: 'cutoff', slide: true }
-          { name: 'res', slide: true }
+          { param: 'cutoff', slide: true }
+          { param: 'res', slide: true }
         ]
       }
       {
-        name: ':slicer'
+        param: ':slicer'
         params: [
-          { name: 'phase_offset', static: true }
+          { param: 'phase_offset', static: true }
           {
-            name: 'wave'
+            param: 'wave'
             control: true
             waveMapping: {
               "saw":      0
@@ -1279,44 +1279,44 @@ module.exports = data =
               "sine":     3
             }
           }
-          { name: 'invert_wave', control: true }
-          { name: 'probability', slide: true }
-          { name: 'prob_pos', slide: true }
-          { name: 'seed', static: true }
-          { name: 'smooth', slide: true }
-          { name: 'smooth_up', slide: true }
-          { name: 'smooth_down', slide: true }
+          { param: 'invert_wave', control: true }
+          { param: 'probability', slide: true }
+          { param: 'prob_pos', slide: true }
+          { param: 'seed', static: true }
+          { param: 'smooth', slide: true }
+          { param: 'smooth_up', slide: true }
+          { param: 'smooth_down', slide: true }
         ]
       }
       {
-        name: ':tanh'
+        param: ':tanh'
         params: [
-          { name: 'krunch', slide: true }
+          { param: 'krunch', slide: true }
         ]
       }
       {
-        name: ':vowel'
+        param: ':vowel'
         params: [
-          { name: 'vowel_sound', control: true }
-          { name: 'voice', control: true }
+          { param: 'vowel_sound', control: true }
+          { param: 'voice', control: true }
         ]
       }
       {
-        name: ':whammy'
+        param: ':whammy'
         params: [
-          { name: 'transpose', slide: true }
-          { name: 'max_delay_time', static: true }
-          { name: 'deltime', static: true }
-          { name: 'grainsize', static: true }
+          { param: 'transpose', slide: true }
+          { param: 'max_delay_time', static: true }
+          { param: 'deltime', static: true }
+          { param: 'grainsize', static: true }
         ]
       }
       {
-        name: ':wobble'
+        param: ':wobble'
         params: [
-          { name: 'phase', slide: true }
-          { name: 'phase_offset', static: true }
+          { param: 'phase', slide: true }
+          { param: 'phase_offset', static: true }
           {
-            name: 'wave',
+            param: 'wave',
             control: true,
             waveMapping: {
               "saw":      0
@@ -1325,13 +1325,13 @@ module.exports = data =
               "sine":     3
             }
           }
-          { name: 'invert_wave', control: true }
-          { name: 'probability', slide: true }
-          { name: 'prob_pos', slide: true }
-          { name: 'seed', static: true }
-          { name: 'smooth', slide: true }
-          { name: 'smooth_up', slide: true }
-          { name: 'smooth_down', slide: true }
+          { param: 'invert_wave', control: true }
+          { param: 'probability', slide: true }
+          { param: 'prob_pos', slide: true }
+          { param: 'seed', static: true }
+          { param: 'smooth', slide: true }
+          { param: 'smooth_up', slide: true }
+          { param: 'smooth_down', slide: true }
         ]
       }
 

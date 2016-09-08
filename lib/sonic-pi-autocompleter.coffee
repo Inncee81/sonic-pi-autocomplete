@@ -53,8 +53,8 @@ module.exports = provider =
       console.log cursorContext
 
       linesInCurrentScope = helper.getLinesInCurrentScope tokens, bufferPosition
-      #console.log "Lines in Current Scope:"
-      #console.log linesInCurrentScope
+      console.log "Lines Data:"
+      console.log linesInCurrentScope
 
       scopeData = helper.createDatabase linesInCurrentScope
       console.log "Scope Data:"
@@ -126,12 +126,13 @@ module.exports = provider =
               if instanceName == fx.identifier
                 possibleParams = data.getFxParams fx.fxType
                 for param in possibleParams
+                  console.log param
                   if lastWord is undefined or lastWord == param.param.substring(0, lastWord.length)
                     suggestions.push
                       text: param.param
                       replacementPrefix: lastWord
                       type: 'property'
-                      leftLabel: 'fx ' + fx.instance
+                      leftLabel: 'fx ' + fx.fxType
                       rightLabel: (if param.slide then 'Slidable' else if param.control then 'Controllable' else if param.static then 'Uncontrollable')
                 break
         else
