@@ -290,8 +290,8 @@ module.exports = helper =
   parseCursorContext: (lineObject, bufferPosition) ->
     #"lines" as in a single expression that can span over multiple lines
     linesInRegard = @getLinesInRegard lineObject, bufferPosition
-    console.log "linesInRegard: "
-    console.log linesInRegard
+    #console.log "linesInRegard: "
+    #console.log linesInRegard
     tokens = @flatten linesInRegard
     @correctLineExprTokens tokens
 
@@ -618,10 +618,14 @@ module.exports = helper =
   #
   # Note that this function only goes into detail for NON-AUGMENTING assignments, function calls, and
   # special Sonic Pi blocks. Other types of line expressions will return just the line type..
-  # IMPORTANT: Parameterless function calls will be treated as expressions
   getLineData: (lineExpr) ->
     @correctLineExprTokens lineExpr
     determiningToken = @getFirstNonWhitespaceToken lineExpr
+    if 'comment.line.number-sign.ruby' in determiningToken.scopes
+      return {
+        lineType: "comment"
+        comment: @convertTokensArrayToString lineExpr
+      }
     if "keyword.control.ruby" in determiningToken.scopes
       if determiningToken.value.trim() in @syntaxBlockCreators
         return {
@@ -758,8 +762,9 @@ module.exports = helper =
 
   createDatabase: (linesData) ->
     currentSynth = ":beep"
-    fxInstances = [] # { fxName: <name with colon delim>, identifier: <variable name> }
-    synthInstances = [] # { synthName: <name with colon delim>, identifier: <variable name> }
+    fxInstances = [] # { fxType: <name with colon delim>, identifier: <variable name> }
+    synthInstances = [] # { synthType: <name with colon delim>, identifier: <variable name> }
+    sampleInstances = [] # { identifier: }
 
     # What would affect the database:
     # [function-call]         use_synth: sets the value of currentSynth
@@ -801,7 +806,13 @@ module.exports = helper =
               identifier: @convertTokensArrayToString(lhsIdentifier).trim()
               synthType: firstParam
             })
+        else if functionName is "sample"
+          for lhsIdentifier in lineData.assignmentData.lhslist
+            sampleInstances.push({
+              identifier: @convertTokensArrayToString(lhsIdentifier).trim()
+            })
 
     currentSynth: currentSynth
     fxInstances: fxInstances
     synthInstances: synthInstances
+    sampleInstances: sampleInstances

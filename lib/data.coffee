@@ -61,6 +61,35 @@ module.exports = data =
     'with_timing_guarantees', 'with_transpose', 'with_tuning'
   ]
 
+  fnParams: [
+    {
+      name: 'live_loop'
+      params: [
+        'init'
+        'auto_cue'
+        'delay'
+        'sync'
+        'sync_bpm'
+        'seed'
+      ]
+    }
+    {
+      name: 'in_thread'
+      params: [
+        'name'
+        'delay'
+        'sync'
+        'sync_bpm'
+      ]
+    }
+    {
+      name: 'defonce'
+      params: [
+        'override'
+      ]
+    }
+  ]
+
   sampleParams: [
     { param: 'amp', control: true }
     { param: 'pre_amp', control: true }
