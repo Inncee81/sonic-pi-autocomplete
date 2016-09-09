@@ -142,7 +142,13 @@ module.exports = data =
       {
         param: 'env_curve'
         static: true
-        curveShape: true
+        waveMapping:
+          "step":     0
+          "linear":   1
+          "sine":     3
+          "welch":    4
+          "squared":  6
+          "cubed":    7
       }
     ]
     synths: [
