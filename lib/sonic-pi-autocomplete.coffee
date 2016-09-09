@@ -6,7 +6,9 @@ data                  = require './data'
 
 module.exports = SonicPiAutocomplete =
   subscriptions: null
-  provide: -> provider
+  provide: ->
+    result = provider
+    return result
 
   activate: (state) ->
     data.initialiseDatabase()
@@ -15,10 +17,14 @@ module.exports = SonicPiAutocomplete =
       'sonic-pi-autocomplete:play-file':                            => @play('getText'),
       'sonic-pi-autocomplete:play-selection':                       => @play('getSelectedText'),
       'sonic-pi-autocomplete:stop':                                 => @stop(),
-      'sonic-pi-autocomplete:play-huge-file':                       => @save_and_play())
+      'sonic-pi-autocomplete:play-huge-file':                       => @save_and_play(),
+      'sonic-pi-autocomplete:cancel': => @cancelAutocomplete(atom.workspace.getActiveTextEditor()))
 
   deactivate: ->
     @subscriptions.dispose()
+
+  cancelAutocomplete: (editor) ->
+    atom.commands.dispatch(editor, 'autocomplete-plus:cancel')
 
   play: (selector) ->
     editor = atom.workspace.getActiveTextEditor()

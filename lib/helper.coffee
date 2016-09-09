@@ -200,8 +200,9 @@ module.exports = helper =
     for token in currentLineTokens
       currentCumulativeColumn += @getTokenLength token
       linesToAddInRegard.push token
-      if currentCumulativeColumn is targetColumn
+      if currentCumulativeColumn >= targetColumn
         break
+
     linesInRegard.push linesToAddInRegard
 
     linesInRegard
@@ -289,6 +290,8 @@ module.exports = helper =
   parseCursorContext: (lineObject, bufferPosition) ->
     #"lines" as in a single expression that can span over multiple lines
     linesInRegard = @getLinesInRegard lineObject, bufferPosition
+    console.log "linesInRegard: "
+    console.log linesInRegard
     tokens = @flatten linesInRegard
     @correctLineExprTokens tokens
 
@@ -377,7 +380,7 @@ module.exports = helper =
                 returnable.tokens.push segmentToken for segmentToken in segment
             else
               returnable.lineType = "function-call"
-              returnable.functionName = token.value
+              returnable.functionName = token.value.trim()
               returnable.params = []
               maybeListOfParams.unshift parameterTokensToAdd.slice()
               returnable.params.push param for param in maybeListOfParams
@@ -385,7 +388,16 @@ module.exports = helper =
               return returnable
           else if @getNumberOfNonWhitespaceTokens(tokens) is 1 # There's no params
             returnable.lineType = "function-call"
-            returnable.functionName = token.value
+            returnable.functionName = token.value.trim()
+            returnable.params = []
+            return returnable
+
+        # Assignment, but treat it as function call of the rhs
+        else if "keyword.operator.assignment.ruby" in token.scopes
+          followingToken = @getFirstNonWhitespaceToken(parameterTokensToAdd)
+          if (followingToken.scopes.length is 1) or ("support.function.kernel.ruby" in followingToken.scopes)
+            returnable.lineType = "function-call"
+            returnable.functionName = followingToken.value.trim()
             returnable.params = []
             return returnable
 
@@ -783,7 +795,7 @@ module.exports = helper =
               synthType: currentSynth
             })
         else if functionName is "synth"
-          firstParam = rightHandSideWords[1]
+          firstParam = rightHandSideWords[1].substring(0, rightHandSideWords[1].length - 1)
           for lhsIdentifier in lineData.assignmentData.lhslist
             synthInstances.push({
               identifier: @convertTokensArrayToString(lhsIdentifier).trim()

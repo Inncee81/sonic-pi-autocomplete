@@ -61,6 +61,90 @@ module.exports = data =
     'with_timing_guarantees', 'with_transpose', 'with_tuning'
   ]
 
+  sampleParams: [
+    { param: 'amp', control: true }
+    { param: 'pre_amp', control: true }
+    { param: 'pan', control: true }
+    { param: 'attack', static: true }
+    { param: 'decay', static: true }
+    { param: 'sustain', static: true }
+    { param: 'release', static: true }
+    { param: 'attack_level', static: true }
+    { param: 'decay_level', static: true }
+    { param: 'sustain_level', static: true }
+    { param: 'lpf', control: true }
+    { param: 'lpf_attack', static: true }
+    { param: 'lpf_decay', static: true }
+    { param: 'lpf_sustain', static: true }
+    { param: 'lpf_release', static: true }
+    { param: 'lpf_init_level', static: true }
+    { param: 'lpf_attack_level', static: true }
+    { param: 'lpf_decay_level', static: true }
+    { param: 'lpf_sustain_level', static: true }
+    { param: 'lpf_release_level', static: true }
+    {
+      param: 'lpf_env_curve'
+      static: true
+      waveMapping:
+        "step":     0
+        "linear":   1
+        "sine":     3
+        "welch":    4
+        "squared":  6
+        "cubed":    7
+    }
+    { param: 'lpf_min', control: true }
+    { param: 'hpf', control: true }
+    { param: 'hpf_attack', static: true }
+    { param: 'hpf_decay', static: true }
+    { param: 'hpf_sustain', static: true }
+    { param: 'hpf_release', static: true }
+    { param: 'hpf_init_level', static: true }
+    { param: 'hpf_attack_level', static: true }
+    { param: 'hpf_decay_level', static: true }
+    { param: 'hpf_sustain_level', static: true }
+    { param: 'hpf_release_level', static: true }
+    {
+      param: 'hpf_env_curve'
+      static: true
+      waveMapping:
+        "step":     0
+        "linear":   1
+        "sine":     3
+        "welch":    4
+        "squared":  6
+        "cubed":    7
+    }
+    { param: 'hpf_max', control: true }
+    {
+      param: 'env_curve'
+      static: true
+      waveMapping:
+        "step":     0
+        "linear":   1
+        "sine":     3
+        "welch":    4
+        "squared":  6
+        "cubed":    7
+    }
+    { param: 'rate', static: true }
+    { param: 'start', static: true }
+    { param: 'finish', static: true }
+    { param: 'norm', static: true }
+    { param: 'pitch', control: true }
+    { param: 'window_size', control: true }
+    { param: 'pitch_dis', control: true }
+    { param: 'time_dis', control: true }
+    { param: 'compress', static: true }
+    { param: 'threshold', control: true }
+    { param: 'clamp_time', control: true }
+    { param: 'threshold', control: true }
+    { param: 'slope_above', control: true }
+    { param: 'slope_below', control: true }
+    { param: 'relax_time', control: true }
+
+  ]
+
   initialiseDatabase: () ->
     for synth in @synths.synths
       @listOfSynthNames.push synth.name
@@ -79,6 +163,11 @@ module.exports = data =
       if fx.name is fxName
         return @fx.defaultParams.concat fx.params
     return @fx.defaultParams
+
+  extractParam: (param, list) ->
+    for p in list
+      if param is p.param
+        return p
 
   listOfSynthNames: []
   listOfFXNames: []
@@ -1004,7 +1093,7 @@ module.exports = data =
     ]
     fx: [
       {
-        param: ':band_eq'
+        name: ':band_eq'
         params: [
           { param: 'freq', slide: true }
           { param: 'res', slide: true }
@@ -1012,7 +1101,7 @@ module.exports = data =
         ]
       }
       {
-        param: ':bitcrusher'
+        name: ':bitcrusher'
         params: [
           { param: 'sample_rate', slide: true }
           { param: 'bits', slide: true }
@@ -1020,14 +1109,14 @@ module.exports = data =
         ]
       }
       {
-        param: ':bpf'
+        name: ':bpf'
         params: [
           { param: 'centre', slide: true }
           { param: 'res', slide: true }
         ]
       }
       {
-        param: ':compressor'
+        name: ':compressor'
         params: [
           { param: 'threshold', slide: true }
           { param: 'clamp_time', slide: true }
@@ -1037,13 +1126,13 @@ module.exports = data =
         ]
       }
       {
-        param: ':distortion'
+        name: ':distortion'
         params: [
           { param: 'distort', slide: true }
         ]
       }
       {
-        param: ':echo'
+        name: ':echo'
         params: [
           { param: 'phase', slide: true }
           { param: 'decay', slide: true }
@@ -1051,7 +1140,7 @@ module.exports = data =
         ]
       }
       {
-        param: ':flanger'
+        name: ':flanger'
         params: [
           { param: 'phase', slide: true }
           { param: 'phase_offset', static: true }
@@ -1077,7 +1166,7 @@ module.exports = data =
         ]
       }
       {
-        param: ':gverb'
+        name: ':gverb'
         params: [
           { param: 'spread', slide: true }
           { param: 'damp', slide: true }
@@ -1090,13 +1179,13 @@ module.exports = data =
         ]
       }
       {
-        param: ':hpf'
+        name: ':hpf'
         params: [
           { param: 'cutoff', slide: true }
         ]
       }
       {
-        param: ':ixi_techno'
+        name: ':ixi_techno'
         params: [
           { param: 'phase', slide: true }
           { param: 'phase_offset', static: true }
@@ -1106,7 +1195,7 @@ module.exports = data =
         ]
       }
       {
-        param: ':krush'
+        name: ':krush'
         params: [
           { param: 'gain', slide: true }
           { param: 'cutoff', slide: true }
@@ -1115,69 +1204,69 @@ module.exports = data =
       }
       {
         # This one is special, only has :amp
-        param: ':level'
+        name: ':level'
         params: []
       }
       {
-        param: ':lpf'
+        name: ':lpf'
         params: [
           { param: 'cutoff', slide: true }
         ]
       }
       {
-        param: ':mono'
+        name: ':mono'
         params: [
           { param: 'pan', slide: true }
         ]
       }
       {
-        param: ':nbpf'
+        name: ':nbpf'
         params: [
           { param: 'centre', slide: true }
           { param: 'res', slide: true }
         ]
       }
       {
-        param: ':nhpf'
+        name: ':nhpf'
         params: [
           { param: 'cutoff', slide: true }
         ]
       }
       {
-        param: ':nlpf'
+        name: ':nlpf'
         params: [
           { param: 'cutoff', slide: true }
         ]
       }
       {
-        param: ':normaliser'
+        name: ':normaliser'
         params: [
           { param: 'level', slide: true }
         ]
       }
       {
-        param: ':nrbpf'
+        name: ':nrbpf'
         params: [
           { param: 'centre', slide: true }
           { param: 'res', slide: true }
         ]
       }
       {
-        param: ':nrlpf'
+        name: ':nrlpf'
         params: [
           { param: 'cutoff', slide: true }
           { param: 'res', slide: true }
         ]
       }
       {
-        param: ':nrlpf'
+        name: ':nrlpf'
         params: [
           { param: 'cutoff', slide: true }
           { param: 'res', slide: true }
         ]
       }
       {
-        param: ':octaver'
+        name: ':octaver'
         params: [
           { param: 'super_amp', slide: true }
           { param: 'sub_amp', slide: true }
@@ -1185,7 +1274,7 @@ module.exports = data =
         ]
       }
       {
-        param: ':octaver'
+        name: ':octaver'
         params: [
           { param: 'super_amp', slide: true }
           { param: 'sub_amp', slide: true }
@@ -1193,13 +1282,13 @@ module.exports = data =
         ]
       }
       {
-        param: ':pan'
+        name: ':pan'
         params: [
           { param: 'pan', slide: true }
         ]
       }
       {
-        param: ':panslicer'
+        name: ':panslicer'
         params: [
           { param: 'phase', slide: true }
           { param: 'amp_min', slide: true }
@@ -1228,7 +1317,7 @@ module.exports = data =
         ]
       }
       {
-        param: ':pitch_shift'
+        name: ':pitch_shift'
         params: [
           { param: 'window_size', slide: true }
           { param: 'pitch', slide: true }
@@ -1237,42 +1326,42 @@ module.exports = data =
         ]
       }
       {
-        param: ':rbpf'
+        name: ':rbpf'
         params: [
           { param: 'centre', slide: true }
           { param: 'res', slide: true }
         ]
       }
       {
-        param: ':reverb'
+        name: ':reverb'
         params: [
           { param: 'room', slide: true }
           { param: 'damp', slide: true }
         ]
       }
       {
-        param: ':rbpf'
+        name: ':rbpf'
         params: [
           { param: 'cutoff', slide: true }
           { param: 'res', slide: true }
         ]
       }
       {
-        param: ':ring_mod'
+        name: ':ring_mod'
         params: [
           { param: 'freq', slide: true }
           { param: 'mod_amp', slide: true }
         ]
       }
       {
-        param: ':rbpf'
+        name: ':rbpf'
         params: [
           { param: 'cutoff', slide: true }
           { param: 'res', slide: true }
         ]
       }
       {
-        param: ':slicer'
+        name: ':slicer'
         params: [
           { param: 'phase_offset', static: true }
           {
@@ -1295,20 +1384,20 @@ module.exports = data =
         ]
       }
       {
-        param: ':tanh'
+        name: ':tanh'
         params: [
           { param: 'krunch', slide: true }
         ]
       }
       {
-        param: ':vowel'
+        name: ':vowel'
         params: [
           { param: 'vowel_sound', control: true }
           { param: 'voice', control: true }
         ]
       }
       {
-        param: ':whammy'
+        name: ':whammy'
         params: [
           { param: 'transpose', slide: true }
           { param: 'max_delay_time', static: true }
@@ -1317,7 +1406,7 @@ module.exports = data =
         ]
       }
       {
-        param: ':wobble'
+        name: ':wobble'
         params: [
           { param: 'phase', slide: true }
           { param: 'phase_offset', static: true }
