@@ -120,6 +120,11 @@ parameters (not fully implemented yet though!).
 
 ## What's new?
 
+### v.2.0: HUGE UPDATE
+  - Much smarter autocompletion.
+  - Added autocompletion directives
+  - Support for ALL samples, synths, fxs, functions, and their respective params
+
 ### v.1.1: No file size limit! (for Sonic Pi 2.11, still in dev)
   - Previously, sending OSC messages over UDP to the Sonic Pi server directly limited the maximum file size
   - Sonic Pi v.2.11 (still under dev) now supports loading files into the buffer and playing it directly with the /save-and-run-buffer-via-local-file OSC command
@@ -134,11 +139,4 @@ parameters (not fully implemented yet though!).
   - Added placeholders for things like `note_slide_shape`, because memorizing `0: Step, 1: Linear, etc...` won't cut
 
 ## Currently In Progress:
-  - Make sure it does as one would expect
-    - Making the autocomplete dialog pop up automatically when entering synth parameters
-    - Auto formatting of snippets and autocompletes, especially for CSV synth and fx params.
-    - Get rid of sloppy code causing TypeErrors (because undefined wasn't checked... lol)
-  - Fully implement all possible synth params, and organize them into Slide, Controllable, or static_synth_params
-  - Do the same thing for all FX params, which apparently does not have any autocomplete features so far
-    - FX params should easily be able to have context sensing, as the params are always placed
-  - Eventually, use grammar
+  - Add autocomplete for `cue` and `sync`
