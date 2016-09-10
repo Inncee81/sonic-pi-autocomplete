@@ -88,7 +88,8 @@ play :c4, cutoff: 80, cutoff_min: 60
 ```
 to get autocompletions for the `tb303` synth.
 
-Another directive that can come in handy is the `#@ play <alias_name> <optional: parameter index to start suggestions> <optional: synth_used>`
+Here's another directive that can come in handy:
+`#@ play <alias_name> <optional: parameter index to start suggestions> <optional: synth_used>`
 
 This will let you control at which parameter of the aliased `alias_name` function will autocompletions for the synth parameters appear for either the current synth, (or `synth_used`, if provided). It doesn't have to be for the `play` command, as demonstrated in the example below:
 
