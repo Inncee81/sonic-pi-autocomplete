@@ -1,10 +1,10 @@
 # Sonic Pi Autocomplete
-###### Atom + Sonic Pi Integration with Super Cow Powers!!!
+###### Atom + Sonic Pi Integration with Ultra Cow Powers!!!
 
 This plugin allows remote controlling [Sonic Pi](http://sonic-pi.net/) via [Atom](https://atom.io/).
 
 Sonic Pi is fun to play with, but its built-in editor is very rudimentary.
-With this plugin, you can do all the live coding in Atom instead.
+With this plugin, you can livecode without having to worry about nitty things like which parameters can you slide or control, or what are the currently available parameters for all synths, fx, samples, and functions. Or whether 1 stood for linear slide_shape for one parameter, or saw mod_wave for another.
 
 ![sonic-pi-atom-screenshot](https://raw.githubusercontent.com/euwbah/sonic-pi-autocomplete/master/screenshot.png)
 
@@ -20,9 +20,10 @@ will only work with Sonic Pi 2.11, which is currently yet to be released.
 
  Key Binding  | Action                      | Description
 --------------|-----------------------------|-----------------
- `alt-r`      | `atom-sonic:play-file`      | Sends content of the currently open buffer to Sonic Pi for instant playback
- `ctrl-alt-r` | `atom-sonic:play-selection` | Sends currently selected text to Sonic Pi for instant playback
- `alt-shift-r`| `atom-sonic:stop`           | Tells Sonic Pi to stop all playback
+ `alt-r`      | `sonic-pi-autocomplete:play-file`      | Sends content of the currently open buffer to Sonic Pi for instant playback
+ `ctrl-alt-r` | `sonic-pi-autocomplete:play-selection` | Sends currently selected text to Sonic Pi for instant playback
+ `alt-shift-r`| `sonic-pi-autocomplete:stop`           | Tells Sonic Pi to stop all playback
+ unbinded     | `sonic-pi-autocomplete:play-huge-file` | Plays a large file that can't be sent over a single OSC message
 
 
 
@@ -49,6 +50,33 @@ Who cares! Just type in `linear`, `cubic`, or whatever you want, hit enter and y
 ```
 play :c4, attack: 0.01, decay: 0, sustain: 1, release: 0.1, amp: 0.5, amp_slide: 1, amp_slide_shape: 1
 ```
+
+Add `x = ` in front to get something like this: `x = play :c4, attack: 0.01, ....`
+
+Try typing `control`, you should be able to see `x` as a `:beep` synth instance. Now you'll be able to see what parameters you can control or slide for :beep.
+
+This works for all synths, the most recent `use_synth` available in the current scope will determine the synth played. This also works if you use `x = synth :tb303, :c4, attack: 0.01` or whatever function that returns a synth instance.
+
+Sometimes, you may want to use `control` a lot, and you end up doing a helper function like this:
+
+```ruby
+def c(*args)
+  control *args
+end
+```
+
+Now if you want to alias this shortened `control` function with the original `control` function, you can create a comment on a new line that goes like this:
+```ruby
+#@ control c
+```
+
+And now whenever you are in scope of the alias comment, you will be able to get autocompletion for `c` just as you would in `control`
+
+In the same way, if you have a function that changes synths, but the `use_synth` is not in scope, you can use
+```ruby
+#$ :tb303
+```
+to simulate a `use_synth :tb303`. Note that you can do this with or without the colon or the space preceeding it.
 
 ## Features
 #### Autocompletion
