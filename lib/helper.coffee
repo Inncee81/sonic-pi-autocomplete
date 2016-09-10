@@ -713,18 +713,21 @@ module.exports = helper =
 
     # IMPORTANT NOTE: It is possible for a block-start to be 'in the scope',
     # however, note the difference between 'in scope' and actually affecting the scope.
-    # Block-starts that don't bring scopesClimbed to a new high shall won't affect the scope at all.
+    # Block-starts that don't bring scopesClimbed to a new high may not affect the scope.
     #   NOTE NOTE NOTE NOTE NOTE AS SUCH, NOTE NOTE NOTE NOTE NOTE
     # The following flag will be set true when currentScopeShallowness has increased, and
     # will be set to false when it scopesClimbed reaches a new high.
     # Only when the flag is false, will the lineData be added to linesData
-    BLOCK_START_SHALL_NOT_AFFECT_SCOPE = false
+    BLOCK_START_MAY_NOT_AFFECT_SCOPE = false
 
     scopesClimbed = 0
     currentScopeShallowness = 0 # Higher number = more globalised scope
     newLinesLeft = lines.slice() # Make a copy for mutations to be done on this one.
 
     loop
+      # RESET FLAG!
+      BLOCK_START_MAY_NOT_AFFECT_SCOPE = false
+
       # Step 0 (or 8)
       if newLinesLeft.length is 0
         break
@@ -746,17 +749,17 @@ module.exports = helper =
       # Step 5
       if lineData.lineType in ["block-start-sonic-pi", "block-start-do", "block-start-ruby"]
         currentScopeShallowness++
-        BLOCK_START_SHALL_NOT_AFFECT_SCOPE = true
+        BLOCK_START_MAY_NOT_AFFECT_SCOPE = true
       else if lineData.lineType is "block-end"
         currentScopeShallowness--
 
       # Step 6
       if currentScopeShallowness > scopesClimbed
         scopesClimbed = currentScopeShallowness
-        BLOCK_START_SHALL_NOT_AFFECT_SCOPE = false
+        BLOCK_START_MAY_NOT_AFFECT_SCOPE = false
 
-      # Step 7
-      if currentScopeShallowness is scopesClimbed and (not BLOCK_START_SHALL_NOT_AFFECT_SCOPE)
+      # Step 7 FIXME: Some same-level block headers do affect the outer scope, e.g. live_loop, define,...
+      if currentScopeShallowness is scopesClimbed and (not BLOCK_START_MAY_NOT_AFFECT_SCOPE)
         linesData.push lineData
 
     return linesData.slice().reverse()

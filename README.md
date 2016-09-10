@@ -1,4 +1,4 @@
-# Sonic Pi Autocomplete
+# [Sonic Pi Autocomplete](https://atom.io/packages/sonic-pi-autocomplete)
 ###### Atom + Sonic Pi Integration with Ultra Cow Powers!!!
 
 This plugin allows remote controlling [Sonic Pi](http://sonic-pi.net/) via [Atom](https://atom.io/).
