@@ -54,6 +54,18 @@ module.exports = provider =
       @temporarilyDisableAutocomplete(editor)
       @suggestionsToDisableAutocomplete = []
 
+  # isKeyValueIn: (object, key, value) ->
+  #   for k, v of object
+  #     if key == k
+  #       if value is v
+  #         return true
+  #
+  #   return false
+  #
+  # keyValueInObjects: (objects, key, value) ->
+  #   for object in objects
+  #     return true if @isKeyValueIn object, key, value
+  #   return false
 
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix, activatedManually}) ->
     if @autocompleteDisableCount isnt 0
@@ -99,18 +111,32 @@ module.exports = provider =
 
       if cursorContext.lineType is "function-call"
         lastWord = @getLastParamWord cursorContext
+        currentFunctionAlias = undefined
+
+        for alias in scopeData.aliases
+          if alias.functionAlias
+            if alias.alias == cursorContext.functionName
+              currentFunctionAlias = alias
 
         if (cursorContext.params.length > 2 and cursorContext.functionName == "play_pattern_timed") or
            (cursorContext.params.length > 1 and cursorContext.functionName in ["play", "play_chord", "play_pattern"]) or
            (cursorContext.functionName in ['use_merged_synth_defaults', 'use_synth_defaults', 'with_merged_synth_defaults', 'with_synth_defaults']) or
-           (cursorContext.params.length > 2 and cursorContext.functionName == "synth")
+           (cursorContext.params.length > 2 and cursorContext.functionName == "synth") or
+           (currentFunctionAlias isnt undefined and
+                currentFunctionAlias.functionName == "play" and
+                cursorContext.params.length >= currentFunctionAlias.startSuggestingAt)
+          
           if cursorContext.functionName == "synth"
             possibleParams = data.getSynthParams(helper.convertTokensArrayToString(cursorContext.params[0]).trim())
+          else if currentFunctionAlias isnt undefined and currentFunctionAlias.synthName isnt undefined
+            possibleParams = data.getSynthParams(currentFunctionAlias.synthName)
           else
             possibleParams = data.getSynthParams scopeData.currentSynth
           secondLastParam = cursorContext.params[cursorContext.params.length - 2] # may be undefined
 
-          [k, v] = lastWord.split(':').map((x) -> x.trim())
+          if lastWord isnt undefined
+            [k, v] = lastWord.split(':').map((x) -> x.trim())
+          else k = v = undefined
           if v isnt undefined
             if k.endsWith "_slide_shape"
               for shape, value of @completions.placeholders.slide_shape
@@ -193,10 +219,11 @@ module.exports = provider =
               suggestions.push
                 text: if spaced then synthName else ' ' + synthName
                 replacementPrefix: if spaced then lastWord else ""
-                type: 'value'
+                type: 'property'
                 rightLabel: 'Sonic Pi Synth'
 
-        else if cursorContext.functionName == "control"
+        else if cursorContext.functionName == "control" or
+                (currentFunctionAlias isnt undefined and currentFunctionAlias.functionName == "control")
           spaced = prefix.endsWith(' ')
           if lastWord is undefined or cursorContext.params.length is 1
             for synth in scopeData.synthInstances
@@ -275,7 +302,7 @@ module.exports = provider =
                 suggestions.push
                   text: if spaced then fxName else ' ' + fxName
                   replacementPrefix: if spaced then lastWord else ""
-                  type: 'value'
+                  type: 'property'
                   rightLabel: 'Sonic Pi FX'
           else
             # This *should* contain the fxType as a string. May be undefined
@@ -298,7 +325,7 @@ module.exports = provider =
               suggestions.push
                 text: (if spaced then '' else ' ') + synth.identifier
                 replacementPrefix: if spaced then lastWord else ""
-                type: 'variable'
+                type: 'property'
                 rightLabel: synth.synthType + " Instance"
               suggestions.push suggestion
               @suggestionsToDisableAutocomplete.push suggestion
@@ -311,7 +338,7 @@ module.exports = provider =
                 suggestions.push
                   text: (if spaced then '' else ' ') + sample
                   replacementPrefix: if spaced then lastWord else ""
-                  type: 'value'
+                  type: 'property'
                   rightLabel: "Sample"
           else
             for param in data.sampleParams
@@ -319,7 +346,7 @@ module.exports = provider =
                 suggestions.push
                   text: (if spaced then '' else ' ') + param.param + ": "
                   replacementPrefix: if spaced then lastWord else ""
-                  type: 'variable'
+                  type: 'property'
                   rightLabel: "Sample Param"
 
         else

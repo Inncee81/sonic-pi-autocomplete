@@ -53,7 +53,7 @@ module.exports = helper =
 
   isOperatorScope: (token) ->
     for scope in token.scopes
-      return true if scope.startsWith "keyword.operator"
+      return true if (scope.startsWith "keyword.operator") or (scope.startsWith "punctuation.separator")
     return false
 
   tokenScopeStartsWith: (token, targetScope) ->
@@ -489,7 +489,8 @@ module.exports = helper =
 
     truncatedTokens = tokens.slice(tokens.indexOf(functionToken) + 1)
     maybeParenFunctionCallToken = @getFirstNonWhitespaceToken(truncatedTokens)
-    if "punctuation.section.function.ruby" in maybeParenFunctionCallToken.scopes and
+    if  maybeParenFunctionCallToken isnt undefined and
+        "punctuation.section.function.ruby" in maybeParenFunctionCallToken.scopes and
         maybeParenFunctionCallToken.value.trim() is "("
       PAREN_CALL_NOT_CONCATENATED = INSIDE_PAREN_CALL = true
 
@@ -765,6 +766,9 @@ module.exports = helper =
     fxInstances = [] # { fxType: <name with colon delim>, identifier: <variable name> }
     synthInstances = [] # { synthType: <name with colon delim>, identifier: <variable name> }
     sampleInstances = [] # { identifier: }
+    aliases = [] # { functionAlias: true, functionName: 'control', alias: 'c' }
+                 # { functionAlias: true, functionName: 'play', alias: 'waw', startSuggestingAt: 2, synthName: ':tb303' }
+                 # { synthInstanceAlias: true, synthName: ':tb303', alias: 'x'}
 
     # What would affect the database:
     # [function-call]         use_synth: sets the value of currentSynth
@@ -786,33 +790,72 @@ module.exports = helper =
           currentSynth = @convertTokensArrayToString(lineData.functionData.params[0]).trim()
         else if lineData.blockType.value.trim() is "with_fx"
           if lineData.variables isnt undefined and lineData.variables.length > 0
-            fxInstances.push({
+            fxInstances.push
               identifier: lineData.variables[0].value.trim()
               fxType: @convertTokensArrayToString(lineData.functionData.params[0]).trim()
-            })
       else if lineData.lineType is "assignment"
         rightHandSideWords = @convertTokensArrayToString(lineData.assignmentData.rhs).trim().split(" ")
         functionName = rightHandSideWords[0]
         if functionName in ["play", "play_chord", "play_pattern", "play_pattern_timed"]
           for lhsIdentifier in lineData.assignmentData.lhslist
-            synthInstances.push({
+            synthInstances.push
               identifier: @convertTokensArrayToString(lhsIdentifier).trim()
               synthType: currentSynth
-            })
         else if functionName is "synth"
           firstParam = rightHandSideWords[1].substring(0, rightHandSideWords[1].length - 1)
           for lhsIdentifier in lineData.assignmentData.lhslist
-            synthInstances.push({
+            synthInstances.push
               identifier: @convertTokensArrayToString(lhsIdentifier).trim()
               synthType: firstParam
-            })
         else if functionName is "sample"
           for lhsIdentifier in lineData.assignmentData.lhslist
-            sampleInstances.push({
+            sampleInstances.push
               identifier: @convertTokensArrayToString(lhsIdentifier).trim()
-            })
+      else if lineData.lineType is "comment"
+        # Possible directives
+        # #$ :synthname -> treated like a use_synth :synthname
+        # #@ control c -> aliases functionName: c with functionName: control
+        # #@ play <fnName> <opt Number param no. to start suggesting> <opt :synthname>
+        #       -> aliases fnName as play, giving parameter suggestions for either currentSynth, or
+        #          :synthname, if specified, starting from the param no.th
+        #          param no. defaults to 2 (meaning 2nd parameter)
+        # #@ :synthname <identifier> -> aliases identifier as an instance of :synthname to control
+        # NOTE: For :synthname, the initial colon can be omitted
+        if lineData.comment.startsWith('#$')
+          synthname = lineData.comment.substring(2).trim()
+          currentSynth = (if synthname.startsWith(':') then "" else ":") + synthname
+        else if lineData.comment.startsWith('#@')
+          words = lineData.comment.substring(2).trim().split(' ').map((x) -> x.trim())
+          console.log words
+          if words[0] is 'control'
+            aliases.push
+              functionAlias: true
+              functionName: 'control'
+              alias: words[1]
+          else if words[0] is 'play'
+            alias = {}
+            alias.functionAlias = true
+            alias.functionName = 'play'
+            alias.startSuggestingAt = 2 # Default setting
+            alias.alias = words[1]
+            if words[2] isnt undefined
+              if not isNaN(Number(words[2]))
+                alias.startSuggestingAt = Number(words[2])
+              else
+                alias.synthName = (if words[2].startsWith(':') then "" else ":") + words[2]
+            if words[3] isnt undefined
+              if not isNaN(Number(words[3]))
+                alias.startSuggestingAt = Number(words[3])
+              else if alias.synthName is undefined
+                alias.synthName = (if words[3].startsWith(':') then "" else ":") + words[3]
+            aliases.push alias
+          else if words[1] isnt undefined
+            synthInstances.push
+              synthType: words[0]
+              identifier: words[1]
 
     currentSynth: currentSynth
     fxInstances: fxInstances
     synthInstances: synthInstances
     sampleInstances: sampleInstances
+    aliases: aliases
