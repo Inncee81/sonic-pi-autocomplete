@@ -3,8 +3,8 @@
 
 This plugin allows remote controlling [Sonic Pi](http://sonic-pi.net/) via [Atom](https://atom.io/).
 
-Sonic Pi is fun to play with, but its built-in editor is very rudimentary.
-With this plugin, you can livecode without having to worry about nitty things like which parameters can you slide or control, or what are the currently available parameters for all synths, fx, samples, and functions. Or whether 1 stood for linear slide_shape for one parameter, or saw mod_wave for another.
+Sonic Pi is fun to play with, but its built-in editor relies a lot on `ctrl-i` to get real stuff done.
+With this plugin, you can livecode without having to worry about nitty things like which parameters can you slide or control, or what are the currently available parameters for all synths, fx, samples, and functions, or whether 1 stood for linear slide_shape for one parameter, or saw mod_wave for another.
 
 ![sonic-pi-atom-screenshot](https://raw.githubusercontent.com/euwbah/sonic-pi-autocomplete/master/screenshot.png)
 
@@ -24,7 +24,6 @@ will only work with Sonic Pi 2.11, which is currently yet to be released.
  `ctrl-alt-r` | `sonic-pi-autocomplete:play-selection` | Sends currently selected text to Sonic Pi for instant playback
  `alt-shift-r`| `sonic-pi-autocomplete:stop`           | Tells Sonic Pi to stop all playback
  unbinded     | `sonic-pi-autocomplete:play-huge-file` | Plays a large file that can't be sent over a single OSC message
-
 
 
 ## Get Started
