@@ -60,6 +60,10 @@ This works for all synths, the most recent `use_synth` available in the current 
 
 ### Parsing directives
 
+#### Aliasing `#@`
+
+##### `control`
+
 Sometimes, you may want to use `control` a lot, and you end up defining a helper function like this:
 
 ```ruby
@@ -75,6 +79,24 @@ Now if you want to alias this shortened `c` function with the original `control`
 
 And now whenever you are in scope of the alias comment, you will be able to get autocompletion for `c` just as you would in `control`
 
+##### `play`
+
+Here's another aliasing directive that can come in handy:
+`#@ play <alias_name> <optional: parameter index to start suggestions> <optional: synth_used>`
+
+This will let you control at which parameter of the aliased `alias_name` function will autocompletions for the synth parameters appear for either the current synth, (or `synth_used`, if provided). It doesn't have to be for the `play` command, as demonstrated in the example below:
+
+```ruby
+drone = synth :dark_ambience, :c2, sustain: 56, release: 8
+
+#@ play ctldrone 0 :dark_ambience
+define :ctldrone do |*args|
+  control drone, *args
+end
+sleep 4
+ctldrone note: :eb2
+```
+
 In the same way, if you have a function that changes synths, but the `use_synth` is not in scope, you can use `#$ :synthname` like this:
 ```ruby
 define :waw do
@@ -87,18 +109,7 @@ play :c4, cutoff: 80, cutoff_min: 60
 ```
 to get autocompletions for the `tb303` synth.
 
-Here's another directive that can come in handy:
-`#@ play <alias_name> <optional: parameter index to start suggestions> <optional: synth_used>`
 
-This will let you control at which parameter of the aliased `alias_name` function will autocompletions for the synth parameters appear for either the current synth, (or `synth_used`, if provided). It doesn't have to be for the `play` command, as demonstrated in the example below:
-
-```ruby
-drone = synth :dark_ambience, sustain: 56, release: 8
-
-#@ play ctldrone 0 :dark_ambience
-define :ctldrone do |*args|
-  control drone, *args
-end
 
 ```
 -----
