@@ -125,7 +125,7 @@ module.exports = provider =
            (currentFunctionAlias isnt undefined and
                 currentFunctionAlias.functionName == "play" and
                 cursorContext.params.length >= currentFunctionAlias.startSuggestingAt)
-          
+
           if cursorContext.functionName == "synth"
             possibleParams = data.getSynthParams(helper.convertTokensArrayToString(cursorContext.params[0]).trim())
           else if currentFunctionAlias isnt undefined and currentFunctionAlias.synthName isnt undefined
@@ -322,7 +322,7 @@ module.exports = provider =
 
           for synth in scopeData.synthInstances
             if lastWord is undefined or lastWord == synth.identifier.substring(0, lastWord.length)
-              suggestions.push
+              suggestion =
                 text: (if spaced then '' else ' ') + synth.identifier
                 replacementPrefix: if spaced then lastWord else ""
                 type: 'property'

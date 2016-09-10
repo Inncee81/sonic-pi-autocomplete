@@ -29,6 +29,8 @@ will only work with Sonic Pi 2.11, which is currently yet to be released.
 
 ## Get Started
 
+### Basic Usage
+
 Try typing
 
 ```
@@ -53,11 +55,13 @@ play :c4, attack: 0.01, decay: 0, sustain: 1, release: 0.1, amp: 0.5, amp_slide:
 
 Add `x = ` in front to get something like this: `x = play :c4, attack: 0.01, ....`
 
-Try typing `control`, you should be able to see `x` as a `:beep` synth instance. Now you'll be able to see what parameters you can control or slide for :beep.
+Try typing `control` on a new line, you should be able to see `x` as a `:beep` synth instance. Now you'll be able to see what parameters you can control or slide for `:beep`.
 
 This works for all synths, the most recent `use_synth` available in the current scope will determine the synth played. This also works if you use `x = synth :tb303, :c4, attack: 0.01` or whatever function that returns a synth instance.
 
-Sometimes, you may want to use `control` a lot, and you end up doing a helper function like this:
+### Parsing directives
+
+Sometimes, you may want to use `control` a lot, and you end up defining a helper function like this:
 
 ```ruby
 def c(*args)
@@ -65,42 +69,46 @@ def c(*args)
 end
 ```
 
-Now if you want to alias this shortened `control` function with the original `control` function, you can create a comment on a new line that goes like this:
+Now if you want to alias this shortened `c` function with the original `control` function, you can create a comment on a new line that goes like this:
 ```ruby
 #@ control c
 ```
 
 And now whenever you are in scope of the alias comment, you will be able to get autocompletion for `c` just as you would in `control`
 
-In the same way, if you have a function that changes synths, but the `use_synth` is not in scope, you can use
+In the same way, if you have a function that changes synths, but the `use_synth` is not in scope, you can use `#$ :synthname` like this:
 ```ruby
+define :waw do
+  use_synth :tb303
+end
+
+waw
 #$ :tb303
+play :c4, cutoff: 80, cutoff_min: 60
 ```
-to simulate a `use_synth :tb303`. Note that you can do this with or without the colon or the space preceeding it.
+to get autocompletions for the `tb303` synth.
 
-## Features
-#### Autocompletion
-`sonic-pi-autocomplete` autocompletes synth, fx and sample names just when you need them,
-and it also supports autocomplete for synth parameters like `amp:`, `cutoff:`, Sonic Pi functions
-like `play` and `use_bpm`, and the likes, just like in the current Sonic Pi GUI
+Another directive that can come in handy is the `#@ play <alias_name> <optional: parameter index to start suggestions> <optional: synth_used>`
 
-#### Snippets
-Now this is the real deal. Express yourself with greater fluency and muse by focusing less on
-the typing, and more on the coding.
+This will let you control at which parameter of the aliased `alias_name` function will autocompletions for the synth parameters appear for either the current synth, (or `synth_used`, if provided). It doesn't have to be for the `play` command, as demonstrated in the example below:
 
-`sonic-pi-autocomplete` has snippets for code block structures like `live_loop`, `in_thread`, `with_fx`,
-but more importantly, it also has snippets which takes the pain out of all those synth
-parameters (not fully implemented yet though!).
+```ruby
+drone = synth :dark_ambience, sustain: 56, release: 8
 
-#### Full list of autocomplete features:
-##### Names:
+#@ play ctldrone 0 :dark_ambience
+define :ctldrone do |*args|
+  control drone, *args
+end
+
+```
+-----
+## Full list of autocomplete features:
+##### Functions, Names and Parameters:
   - All Synth symbols
   - All FX symbols
   - All Sample symbols
-
-##### Sonic Pi Language
-  - Sonic Pi functions (e.g. `play`, `use_bpm`) (partially supported)
-  - Synth Play / Control Parameters + Parameter control type (partially supported)
+  - All functions
+  - All parameters + parameter type
 
 ##### Smart Snippets
   - `adsr`
@@ -115,15 +123,25 @@ parameters (not fully implemented yet though!).
     - same as `slide` but also adds a `_slide_curve` parameter
   - `slideshape`
     - same as `slide` but also adds a `_slide_shape` parameter
-  - `step`, `linear`, `welch`, `sine`, `squared`, `cubed`
-    - resolves to the integer representing the shape of the slide
+  - All integer enumerations representing wave shapes in wave shape / slide shape parameters
+    - `step`
+    - `linear`
+    - `sine`
+    - `welch`
+    - `squared`
+    - `cubed`
+    - `saw`
+    - `pulse`
+    - `triangle`
+    - `sine`
 
 ## What's new?
 
 ### v.2.0: HUGE UPDATE
   - Much smarter autocompletion.
-  - Added autocompletion directives
   - Support for ALL samples, synths, fxs, functions, and their respective params
+  - Smart scope-based contextual autocompletion with pre-parsing features
+  - Added autocompletion directives
 
 ### v.1.1: No file size limit! (for Sonic Pi 2.11, still in dev)
   - Previously, sending OSC messages over UDP to the Sonic Pi server directly limited the maximum file size
@@ -138,5 +156,6 @@ parameters (not fully implemented yet though!).
   - Updated all synth names, samples, fx to the latest release: Sonic Pi v2.10
   - Added placeholders for things like `note_slide_shape`, because memorizing `0: Step, 1: Linear, etc...` won't cut
 
-## Currently In Progress:
+## TODO:
   - Add autocomplete for `cue` and `sync`
+  - Allow function aliasing directives to be placed right before functions so that the redundant alias name parameter needn't be there.
