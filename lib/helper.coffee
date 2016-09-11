@@ -178,19 +178,19 @@ module.exports = helper =
     tokens: returnable
     linesPreceeded: linesPreceeded
     linesSuffixed: linesSuffixed - 1 # `- 1` is for the line the cursor is already on
-    flagAddNextRound: FLAG_ADD_NEXT_ROUND
+    flagAddNextRound: FLAG_ADD_NEXT_ROUND # this is solely for debugging purposes.. hopefully
 
   getTokenLength: (token) ->
     token.value.length
 
-  getLinesInRegard: (lineObject, bufferPosition) ->
+  getTokensInRegard: (lineObject, bufferPosition) ->
     lines = lineObject.tokens
     linesPreceedingCursor = lineObject.linesPreceeded
-    linesInRegard = []
+    tokensInRegard = []
 
-    #fill up linesInRegard with all necessary preceeding lines
+    #fill up tokensInRegard with all necessary preceeding lines
     for i in [0...linesPreceedingCursor] #exclusive range is three dots so 0...0 is empty
-      linesInRegard.push lines[i]
+      tokensInRegard.push lines[i]
 
     #find out how many tokens of the line at bufferPosition.row is in regard
     currentLineTokens = lines[linesPreceedingCursor]
@@ -203,14 +203,14 @@ module.exports = helper =
       if currentCumulativeColumn >= targetColumn
         break
 
-    linesInRegard.push linesToAddInRegard
+    tokensInRegard.push linesToAddInRegard
 
-    linesInRegard
+    tokensInRegard
 
   # Flattens lines of tokens into a single line of tokens
-  flatten: (linesInRegard) ->
+  flatten: (tokensInRegard) ->
     singleDepthTokens = []
-    for line in linesInRegard
+    for line in tokensInRegard
       singleDepthTokens.push token for token in line
 
     singleDepthTokens
@@ -219,36 +219,42 @@ module.exports = helper =
   # with the parameter as a single token....
   # This fixes it
   correctLineExprTokens: (lineExprTokens) ->
-    firstToken = lineExprTokens.shift()
-    stringToAdd = ""
-    WHITESPACE_FLAG = false
-    tokensToUnshift = []
-    for char in firstToken.value
-      if ((char is ' ') or (String(char).trim().length is 0)) and (not WHITESPACE_FLAG)
-        # toggle WHITESPACE_FLAG, and add the current stringToAdd to the tokensToUnshift
-        WHITESPACE_FLAG = true
-        tokensToUnshift.push {
-          scopes: firstToken.scopes
-          value: stringToAdd
-        }
-        stringToAdd = ""
-      else if (not ((char is ' ') or (String(char).trim().length is 0))) and WHITESPACE_FLAG
-        WHITESPACE_FLAG = false
-        # now it's adding whitespace
-        tokensToUnshift.push {
-          scopes: ["source.ruby"]
-          value: stringToAdd
-        }
-        stringToAdd = ""
+    originalCopy = lineExprTokens.slice()
+    returnableTokens = []
+    while originalCopy.length isnt 0
+      currToken = originalCopy.shift()
+      stringToAdd = ""
+      WHITESPACE_FLAG = false
+      tokensToUnshift = []
+      for char in currToken.value
+        if ((char is ' ') or (String(char).trim().length is 0)) and (not WHITESPACE_FLAG)
+          # toggle WHITESPACE_FLAG, and add the current stringToAdd to the tokensToUnshift
+          WHITESPACE_FLAG = true
+          tokensToUnshift.push {
+            scopes: currToken.scopes
+            value: stringToAdd
+          }
+          stringToAdd = ""
+        else if (not ((char is ' ') or (String(char).trim().length is 0))) and WHITESPACE_FLAG
+          WHITESPACE_FLAG = false
+          # now it's adding whitespace
+          tokensToUnshift.push {
+            scopes: ["source.ruby"]
+            value: stringToAdd
+          }
+          stringToAdd = ""
 
-      stringToAdd += char
+        stringToAdd += char
 
-    tokensToUnshift.push {
-      scopes: firstToken.scopes
-      value: stringToAdd
-    }
+      # Add the remaining (and possible, only) one
+      tokensToUnshift.push {
+        scopes: currToken.scopes
+        value: stringToAdd
+      }
 
-    lineExprTokens.unshift token for token in tokensToUnshift.slice().reverse()
+      returnableTokens.push token for token in tokensToUnshift.slice()
+
+    return returnableTokens
 
   getNumberOfNonWhitespaceTokens: (tokens) ->
     numberOfNonWhitespaceTokens = 0
@@ -289,20 +295,29 @@ module.exports = helper =
   #       values: array of hash mappings in the array, each hash mapping is an array of tokens
   parseCursorContext: (lineObject, bufferPosition) ->
     #"lines" as in a single expression that can span over multiple lines
-    linesInRegard = @getLinesInRegard lineObject, bufferPosition
-    #console.log "linesInRegard: "
-    #console.log linesInRegard
-    tokens = @flatten linesInRegard
-    @correctLineExprTokens tokens
+    tokensInRegard = @getTokensInRegard lineObject, bufferPosition
+    #console.log "tokensInRegard: "
+    #console.log tokensInRegard
+    tokens = @flatten tokensInRegard
+    tokens = @correctLineExprTokens tokens
 
     returnable = {}
 
     determiningToken = @getFirstNonWhitespaceToken tokens
 
-    if determiningToken in @syntaxBlockCreators
+    if determiningToken is undefined
+      return {}
+
+    if determiningToken.value in @syntaxBlockCreators
       returnable.lineType = "control-block-header"
       returnable.blockType = tokens.slice(0, 1)
-      returnable.blockExpression = tokens.slice(1)
+      lineObjectToParse =
+        tokens: [tokens.slice(1)]
+        linesPreceeded: 0
+        linesSuffixed: 0
+        #flagAddNextRound: false
+
+      returnable.blockExpression = @parseCursorContext(lineObjectToParse, bufferPosition)
       return returnable
 
     # Can be postfix controls, or method calls
@@ -361,7 +376,11 @@ module.exports = helper =
           for commaSeparatedSegment in maybeListOfParams # Just in case something made it think this way
             postfixTokensList.push segmentToken for segmentToken in commaSeparatedSegment
           returnable.lineType = "postfix-control"
-          returnable.postfixExpression = postfixTokensList
+          lineObjectToParse =
+            tokens: [postfixTokensList]
+            linesPreceeded: 0
+            linesSuffixed: 0
+          returnable.postfixExpression = @parseCursorContext lineObjectToParse, bufferPosition
           returnable.postfixType = token
           return returnable
 
@@ -620,7 +639,7 @@ module.exports = helper =
   # Note that this function only goes into detail for NON-AUGMENTING assignments, function calls, and
   # special Sonic Pi blocks. Other types of line expressions will return just the line type..
   getLineData: (lineExpr) ->
-    @correctLineExprTokens lineExpr
+    lineExpr = @correctLineExprTokens lineExpr
     determiningToken = @getFirstNonWhitespaceToken lineExpr
     if 'comment.line.number-sign.ruby' in determiningToken.scopes
       return {
