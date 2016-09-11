@@ -221,7 +221,7 @@ module.exports = helper =
   correctLineExprTokens: (lineExprTokens) ->
     originalCopy = lineExprTokens.slice()
     returnableTokens = []
-    while originalCopy.length isnt 0
+    while originalCopy isnt undefined and originalCopy.length isnt 0
       currToken = originalCopy.shift()
       stringToAdd = ""
       WHITESPACE_FLAG = false
@@ -306,7 +306,7 @@ module.exports = helper =
     determiningToken = @getFirstNonWhitespaceToken tokens
 
     if determiningToken is undefined
-      return {}
+      return returnable
 
     if determiningToken.value in @syntaxBlockCreators
       returnable.lineType = "control-block-header"

@@ -590,6 +590,12 @@ module.exports = provider =
         #           rightLabel: 'Sonic Pi Fn'
 
       else if cursorContext.lineType is "control-block-header"
+        if @getNumOfValuesInObject(cursorContext.blockExpression) is 0
+          @autocompleteFunctions suggestions,
+                                 undefined,
+                                 [],
+                                 cursorContext.blockExpression,
+                                 scopeData
         if cursorContext.blockExpression.lineType is 'function-call'
           @autocompleteFunctions suggestions,
                                  cursorContext.blockExpression.functionName,
@@ -598,6 +604,12 @@ module.exports = provider =
                                  scopeData
 
       else if cursorContext.lineType is 'postfix-control'
+        if @getNumOfValuesInObject(cursorContext.postfixExpression) is 0
+          @autocompleteFunctions suggestions,
+                                 undefined,
+                                 [],
+                                 cursorContext.postfixExpression,
+                                 scopeData
         if cursorContext.postfixExpression.lineType is 'function-call'
           @autocompleteFunctions suggestions,
                                  cursorContext.postfixExpression.functionName,
