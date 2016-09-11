@@ -97,6 +97,21 @@ sleep 4
 ctldrone note: :eb2
 ```
 
+##### Note instances
+
+It's also possible to alias identifiers with instances of synths by using `#@ :synthname identifier`
+
+Here's an example:
+
+```ruby
+define :rndplay do
+  return play rand * 120
+end
+```
+
+
+#### use_synth `#$`
+
 In the same way, if you have a function that changes synths, but the `use_synth` is not in scope, you can use `#$ :synthname` like this:
 ```ruby
 define :waw do
@@ -110,8 +125,6 @@ play :c4, cutoff: 80, cutoff_min: 60
 to get autocompletions for the `tb303` synth.
 
 
-
-```
 -----
 ## Full list of autocomplete features:
 ##### Functions, Names and Parameters:
