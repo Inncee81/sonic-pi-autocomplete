@@ -351,7 +351,7 @@ module.exports = helper =
            ("punctuation.section.function.ruby" in followingToken.scopes and followingToken.value.trim() is "("  and # Function call with brackets
                parenDepth is -1 and brackDepth is braceDepth is 0)
           returnable.lineType = "function-call"
-          returnable.functionName = (token.value).trim()
+          returnable.functionName = token.value.trim()
           returnable.params = []
           returnable.params.push parameterTokensToAdd.slice(1)
           returnable.params.push param for param in maybeListOfParams

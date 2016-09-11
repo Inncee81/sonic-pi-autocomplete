@@ -72,7 +72,7 @@ module.exports = provider =
 
   # NOTE: For exprData, it can either mean cursorContext, or blockExpression, depending on
   # where the function data is
-  autocompleteFunctions: (suggestions, functionName, params, exprData, scopeData) ->
+  autocompleteFunctions: (suggestions, functionName, params, exprData, scopeData, prefix) ->
     lastWord = @getLastParamWord exprData
     currentFunctionAlias = undefined
 
@@ -328,7 +328,8 @@ module.exports = provider =
                 suggestions.push suggestion
 
       # Function name completion
-      if (@getNumOfValuesInObject(exprData) is 0) or (params.length is 0 and lastWord is undefined)
+      if (@getNumOfValuesInObject(exprData) is 0) or (params.length is 0 and lastWord is undefined) or
+         (exprData.params[0] isnt undefined and helper.getNumberOfNonWhitespaceTokens(exprData.params[0]) is 0)
         for fn in data.fns
           if (@getNumOfValuesInObject(exprData) is 0) or
              (functionName == fn.substring(0, functionName.length))
@@ -474,120 +475,12 @@ module.exports = provider =
       console.log "num of values: " + @getNumOfValuesInObject cursorContext
 
       if cursorContext.lineType is "function-call"
-        @autocompleteFunctions suggestions, cursorContext.functionName, cursorContext.params, cursorContext, scopeData
-        # if cursorContext.functionName.length isnt 0
-        #   for fnParam in data.fnParams
-        #     if cursorContext.functionName == fnParam.name
-        #       spaced = lastWord.endsWith(' ') or lastWord isnt undefined
-        #       for param in fnParam.params
-        #         if lastWord is undefined or lastWord == param.substring(0, lastWord.length)
-        #           suggestion =
-        #             text: (if spaced then "" else ' ') + param + ": "
-        #             replacementPrefix: if spaced then lastWord else ""
-        #             type: 'snippet'
-        #             rightLabel: fnParam.name + " Param"
-        #           suggestions.push suggestion
-        #
-        # if cursorContext.params.length is 0 and lastWord is undefined
-        #   for fn in data.fns
-        #     if (@getNumOfValuesInObject(cursorContext) is 0) or
-        #        (cursorContext.functionName == fn.substring(0, cursorContext.functionName.length))
-        #
-        #       # All function snippets goes here
-        #       if fn is 'play'
-        #         suggestion =
-        #           text: 'play '
-        #           displayText: 'play'
-        #           replacementPrefix: cursorContext.functionName
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Fn'
-        #         suggestions.push suggestion
-        #       else if fn is 'with_fx'
-        #         suggestion =
-        #           snippet: 'with_fx :${1:reverb} do\n\t:${2}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'with_fx'
-        #         suggestions.push suggestion
-        #         @suggestionsToDisableAutocomplete.push suggestion
-        #         suggestion =
-        #           snippet: 'with_fx :${1:reverb} do | ${2:fx_instance} |\n\t${3}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'with_fx + controllable fx instance'
-        #         suggestions.push suggestion
-        #       else if fn is 'live_loop'
-        #         suggestion =
-        #           snippet: 'live_loop :${1:loop_name} do\n\t${2}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'live_loop'
-        #         suggestions.push suggestion
-        #         @suggestionsToDisableAutocomplete.push suggestion
-        #         suggestion =
-        #           snippet: 'live_loop :${1:loop_name} do\n\tsync :${2:sync_loop_name}\n${3}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'live_loop + sync'
-        #         suggestions.push suggestion
-        #         @suggestionsToDisableAutocomplete.push suggestion
-        #       else if fn is 'in_thread'
-        #         suggestion =
-        #           snippet: 'in_thread do\n\t${1}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'in_thread'
-        #         suggestions.push suggestion
-        #         @suggestionsToDisableAutocomplete.push suggestion
-        #         suggestion =
-        #           snippet: 'in_thread name: :${1:thread_name} do\n\t${2}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'in_thread + Thread name'
-        #         suggestions.push suggestion
-        #         @suggestionsToDisableAutocomplete.push suggestion
-        #       else if fn is 'with_synth'
-        #         suggestions.push
-        #           snippet: 'with_synth :${1:beep} do\n\t${2}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'with_synth'
-        #       else if fn is 'with_synth_defaults'
-        #         suggestions.push
-        #           snippet: 'with_synth_defaults ${1:params} do\n\t${2}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'with_synth_defaults'
-        #       else if fn is 'with_merged_synth_defaults'
-        #         suggestions.push
-        #           snippet: 'with_merged_synth_defaults ${1:params} do\n\t${2}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'with_merged_synth_defaults'
-        #       else if fn is 'with_sample_defaults'
-        #         suggestions.push
-        #           snippet: 'with_sample_defaults ${1:params} do\n\t${2}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'with_sample_defaults'
-        #       else if fn is 'with_merged_sample_defaults'
-        #         suggestions.push
-        #           snippet: 'with_merged_sample_defaults ${1:params} do\n\t${2}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'with_merged_sample_defaults'
-        #       else if fn is 'at'
-        #         suggestions.push
-        #           snippet: 'at ${1:1} do\n\t${2}\nend'
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Snippet'
-        #           displayText: 'at'
-        #       else
-        #         suggestions.push
-        #           text: fn + " "
-        #           replacementPrefix: cursorContext.functionName
-        #           type: 'snippet'
-        #           rightLabel: 'Sonic Pi Fn'
+        @autocompleteFunctions suggestions,
+                               cursorContext.functionName,
+                               cursorContext.params,
+                               cursorContext,
+                               scopeData,
+                               prefix
 
       else if cursorContext.lineType is "control-block-header"
         if @getNumOfValuesInObject(cursorContext.blockExpression) is 0
@@ -595,13 +488,15 @@ module.exports = provider =
                                  undefined,
                                  [],
                                  cursorContext.blockExpression,
-                                 scopeData
+                                 scopeData,
+                                 prefix
         if cursorContext.blockExpression.lineType is 'function-call'
           @autocompleteFunctions suggestions,
                                  cursorContext.blockExpression.functionName,
                                  cursorContext.blockExpression.params,
                                  cursorContext.blockExpression,
-                                 scopeData
+                                 scopeData,
+                                 prefix
 
       else if cursorContext.lineType is 'postfix-control'
         if @getNumOfValuesInObject(cursorContext.postfixExpression) is 0
@@ -609,18 +504,21 @@ module.exports = provider =
                                  undefined,
                                  [],
                                  cursorContext.postfixExpression,
-                                 scopeData
+                                 scopeData,
+                                 prefix
         if cursorContext.postfixExpression.lineType is 'function-call'
           @autocompleteFunctions suggestions,
                                  cursorContext.postfixExpression.functionName,
                                  cursorContext.postfixExpression.params,
                                  cursorContext.postfixExpression,
-                                 scopeData
+                                 scopeData,
+                                 prefix
       else if (@getNumOfValuesInObject cursorContext) is 0
         @autocompleteFunctions suggestions,
                                undefined,
                                [],
                                cursorContext,
-                               scopeData
+                               scopeData,
+                               prefix
 
       resolve(suggestions)
