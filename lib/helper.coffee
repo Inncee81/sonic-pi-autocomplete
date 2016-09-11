@@ -350,12 +350,19 @@ module.exports = helper =
            (token.scopes.length is 1 or "support.function.kernel.ruby" in token.scopes) and
            ("punctuation.section.function.ruby" in followingToken.scopes and followingToken.value.trim() is "("  and # Function call with brackets
                parenDepth is -1 and brackDepth is braceDepth is 0)
-          returnable.lineType = "function-call"
-          returnable.functionName = token.value.trim()
-          returnable.params = []
-          returnable.params.push parameterTokensToAdd.slice(1)
-          returnable.params.push param for param in maybeListOfParams
-          return returnable
+          if token.value.trim().length isnt 0
+            returnable.lineType = "function-call"
+            returnable.functionName = token.value.trim()
+            returnable.params = []
+            returnable.params.push parameterTokensToAdd.slice(1)
+            returnable.params.push param for param in maybeListOfParams
+
+            return returnable
+          else
+            returnable.lineType = 'function-call'
+            returnable.functionName = @convertTokensArrayToString(parameterTokensToAdd.slice(1)).trim()
+            returnable.params = []
+            return returnable
         else
           returnable.lineType = "expression"
           returnable.tokens = parameterTokensToAdd.slice()
@@ -403,6 +410,9 @@ module.exports = helper =
               returnable.params = []
               maybeListOfParams.unshift parameterTokensToAdd.slice()
               returnable.params.push param for param in maybeListOfParams
+
+              console.log "tokenAtReturnable"
+              console.log token
 
               return returnable
           else if @getNumberOfNonWhitespaceTokens(tokens) is 1 # There's no params
