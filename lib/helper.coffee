@@ -488,14 +488,18 @@ module.exports = helper =
 
   lineEndsWithDo: (lineExpr) ->
     for token in lineExpr.slice().reverse()
-      if @tokenScopeStartsWith token, "variable" or
-         "punctuation.separator.variable.ruby" in token.scopes or
-         "punctuation.separator.object.ruby" in token.scopes or
+      console.log "LEWD TOKEN: " + token.value
+      if (@tokenScopeStartsWith token, "variable") or
+         ("punctuation.separator.variable.ruby" in token.scopes) or
+         ("punctuation.separator.object.ruby" in token.scopes) or
          (token.value.trim().length is 0 and token.scopes.length is 1)
+        console.log 'CONTINUED'
         continue #do nothing, variable identifiers, pipes, commas and whitespace can suffix a do
       else if "keyword.control.start-block.ruby" in token.scopes # do
+        console.log 'IT ENDS WITH DO!'
         return true
       else
+        console.log 'IT DOESN\'T!!???'
         return false
 
   getTokensWithoutFurtherAdo: (lineExpr) ->
