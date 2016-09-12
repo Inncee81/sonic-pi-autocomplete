@@ -269,8 +269,8 @@ module.exports = provider =
               rightLabel: 'Sonic Pi FX'
       else
         # This *should* contain the fxType as a string. May be undefined
-        secondLastParam = helper.convertTokensArrayToString(params[params.length - 2]).trim()
-        possibleParams = data.getFxParams secondLastParam
+        firstParam = helper.convertTokensArrayToString(params[0]).trim()
+        possibleParams = data.getFxParams firstParam
         spaced = prefix.endsWith(' ') or lastWord isnt undefined
         for param in possibleParams
           if lastWord is undefined or lastWord == param.param.substring(0, lastWord.length)
@@ -278,7 +278,7 @@ module.exports = provider =
               text: (if spaced then "" else " ") + param.param + ": "
               replacementPrefix: lastWord
               type: 'property'
-              leftLabel: 'fx ' + secondLastParam
+              leftLabel: 'fx ' + firstParam
               rightLabel: (if param.slide then 'Slidable' else if param.control then 'Controllable' else if param.static then 'Uncontrollable')
 
     else if functionName == "kill"
