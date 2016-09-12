@@ -432,6 +432,8 @@ module.exports = provider =
                 rightLabel: 'Sonic Pi Fn'
 
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix, activatedManually}) ->
+    console.log "DEBUG prefix scopes: "
+    console.log scopeDescriptor
     if @autocompleteDisableCount isnt 0
       @autocompleteDisableCount--
     if @autocompleteDisableCount is 0

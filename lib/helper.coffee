@@ -53,9 +53,15 @@ module.exports = helper =
 
   isOperatorScope: (token) ->
     for scope in token.scopes
-      return true if (scope.startsWith "keyword.operator") or (scope.startsWith "punctuation.separator")
+      return true if ((scope.startsWith "keyword.operator") or (scope.startsWith "punctuation.separator")) and
+                      token.value.trim() isnt "|"
     return false
 
+  isBlockButNotDo: (token) ->
+    if token.scopes isnt undefined
+      for scope in token.scopes
+        return true if scope is 'keyword.control.ruby' or scope is 'keyword.control.def.ruby'
+    return false
   tokenScopeStartsWith: (token, targetScope) ->
     for scope in token.scopes
       return true if scope.startsWith targetScope
@@ -98,7 +104,7 @@ module.exports = helper =
     linesSuffixed = 0
 
     # Backwards (closing paren will increase depth)
-    braceDepth = 0; brackDepth = 0; parenDepth = 0
+    braceDepth = 0; brackDepth = 0; parenDepth = 0; variableScope = false;
     for line in lines.slice(0, lineNo).reverse()
       for token in line
         if "punctuation.section.function.ruby" in token.scopes
@@ -110,18 +116,21 @@ module.exports = helper =
           brackDepth--
         else if "punctuation.section.array.end.ruby" in token.scopes
           brackDepth++
-        else if "punctuation.section.scope.begin.ruby" in token.scopes
+        else if "meta.syntax.ruby.start-block" in token.scopes
           braceDepth--
         else if "punctuation.section.scope.end.ruby" in token.scopes
           braceDepth++
+        else if "keyword.operator.other.ruby" in token.scopes
+          if token.value.trim() is "|"
+            variableScope = not variableScope
 
       lastToken = @getLastNonWhitespaceToken line #note: line can be empty and lastToken can be undefined
 
       if lastToken isnt undefined and (
-           (lastToken.value.trim() is "\\" and lastToken.scopes.length is 1)  or
-            (not (braceDepth == brackDepth == parenDepth == 0))               or
-            (@isOperatorScope lastToken)                                      or
-            ("keyword.control.ruby" in lastToken.scopes and lastToken.value.trim() in @syntaxBlockCreators) or
+           (lastToken.value.trim() is "\\" and lastToken.scopes.length is 1)                or
+            (not (braceDepth == brackDepth == parenDepth == 0) or variableScope)            or
+            (@isOperatorScope lastToken)                                                    or
+            (@isBlockButNotDo lastToken and lastToken.value.trim() in @syntaxBlockCreators) or
             "punctuation.separator.object.ruby" in lastToken.scopes
          )
         line.splice(0, line.length - 2) if lastToken.value.trim() is "\\"
@@ -133,7 +142,7 @@ module.exports = helper =
         break
 
     # Forwards (closing paren will decrease depth)
-    braceDepth = 0; brackDepth = 0; parenDepth = 0
+    braceDepth = 0; brackDepth = 0; parenDepth = 0; variableScope = false;
 
     FLAG_ADD_NEXT_ROUND = true #initially set to true to push the current line at cursor
 
@@ -148,12 +157,23 @@ module.exports = helper =
           brackDepth++
         else if "punctuation.section.array.end.ruby" in token.scopes
           brackDepth--
-        else if "punctuation.section.scope.begin.ruby" in token.scopes
+        else if "meta.syntax.ruby.start-block" in token.scopes
           braceDepth++
         else if "punctuation.section.scope.end.ruby" in token.scopes
           braceDepth--
+        else if "keyword.operator.other.ruby" in token.scopes
+          if token.value.trim() is "|"
+            variableScope = not variableScope
 
       lastToken = @getLastNonWhitespaceToken line
+
+      # if lastToken isnt undefined
+      #   console.log "Last token: " + lastToken.value
+      #   if lastToken.value.trim() is "|"
+      #     console.log "PIPE DETECTED"
+      #     console.log "PIPE SCOPES:"
+      #     console.log lastToken.scopes
+      #     console.log "Is operator? " + @isOperatorScope(lastToken)
 
       if FLAG_ADD_NEXT_ROUND is true
         lineToAdd = []
@@ -165,10 +185,10 @@ module.exports = helper =
         break
 
       if lastToken isnt undefined and (
-           (lastToken.value.trim() is "\\" and lastToken.scopes.length is 1)  or
-            (not (braceDepth == brackDepth == parenDepth == 0))               or
-            (@isOperatorScope lastToken)                                      or
-            ("keyword.control.ruby" in lastToken.scopes and lastToken.value.trim() in @syntaxBlockCreators) or
+           (lastToken.value.trim() is "\\" and lastToken.scopes.length is 1)                or
+            (not (braceDepth == brackDepth == parenDepth == 0) and variableScope)           or
+            (@isOperatorScope lastToken)                                                    or
+            (@isBlockButNotDo lastToken and lastToken.value.trim() in @syntaxBlockCreators) or
             "punctuation.separator.object.ruby" in lastToken.scopes
          )
         line.splice(0, line.length - 2) if lastToken.value.trim() is "\\" # Delete the trailing \
@@ -411,8 +431,8 @@ module.exports = helper =
               maybeListOfParams.unshift parameterTokensToAdd.slice()
               returnable.params.push param for param in maybeListOfParams
 
-              console.log "tokenAtReturnable"
-              console.log token
+              # console.log "tokenAtReturnable"
+              # console.log token
 
               return returnable
           else if @getNumberOfNonWhitespaceTokens(tokens) is 1 # There's no params
@@ -593,8 +613,8 @@ module.exports = helper =
         loop
           firstToken = paramTokens.unshift()
           # shift out the first token until a non-whitespace token is shifted
-          if not @whitespace firstToken
-            break
+          break if firstToken.scopes is undefined
+          break if not helper.whitespaceToken(firstToken)
         paramTokens
       )(returnable.params[0])
 
@@ -602,8 +622,8 @@ module.exports = helper =
         loop
           lastToken = paramTokens.pop()
           # shift out the last token until a non-whitespace token is shifted
-          if not @whitespace firstToken
-            break
+          break if lastToken.scopes is undefined
+          break if not helper.whitespaceToken(lastToken)
       )(returnable.params[returnable.params.length - 1])
 
     return returnable
@@ -656,7 +676,7 @@ module.exports = helper =
         lineType: "comment"
         comment: @convertTokensArrayToString lineExpr
       }
-    if "keyword.control.ruby" in determiningToken.scopes
+    if @isBlockButNotDo determiningToken
       if determiningToken.value.trim() in @syntaxBlockCreators
         return {
           lineType: "block-start-ruby"
@@ -756,7 +776,6 @@ module.exports = helper =
     loop
       # RESET FLAG!
       BLOCK_START_MAY_NOT_AFFECT_SCOPE = false
-
       # Step 0 (or 8)
       if newLinesLeft.length is 0
         break
@@ -773,8 +792,10 @@ module.exports = helper =
       # Step 4
       lastLineExpressionLineTokens = @flatten lastLineExpression.tokens
 
-      lineData = @getLineData lastLineExpressionLineTokens
 
+      lineData = @getLineData lastLineExpressionLineTokens
+      console.log "lineData:"
+      console.log lineData
       # Step 5
       if lineData.lineType in ["block-start-sonic-pi", "block-start-do", "block-start-ruby"]
         currentScopeShallowness++
@@ -787,8 +808,16 @@ module.exports = helper =
         scopesClimbed = currentScopeShallowness
         BLOCK_START_MAY_NOT_AFFECT_SCOPE = false
 
+      # console.log "---------------------------"
+      # console.log "at: " + @convertTokensArrayToString lastLineExpressionLineTokens
+      # console.log "currentShallowness: " + currentScopeShallowness
+      # console.log "scopesClimbed: " + scopesClimbed
+
       # Step 7 FIXME: Some same-level block headers do affect the outer scope, e.g. live_loop, define,...
-      if currentScopeShallowness is scopesClimbed and (not BLOCK_START_MAY_NOT_AFFECT_SCOPE)
+      if currentScopeShallowness is scopesClimbed and
+          ((not BLOCK_START_MAY_NOT_AFFECT_SCOPE) or
+            lineData.lineType in ['comment', 'block-start-sonic-pi', 'block-start-ruby'])
+        console.log "pushing line"
         linesData.push lineData
 
     return linesData.slice().reverse()
