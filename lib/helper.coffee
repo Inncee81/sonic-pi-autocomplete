@@ -332,7 +332,7 @@ module.exports = helper =
       returnable.lineType = "control-block-header"
       returnable.blockType = tokens.slice(0, 1)
       lineObjectToParse =
-        tokens: [tokens.slice(1)]
+        tokens: [tokens.slice(tokens.indexOf(determiningToken) + 1)]
         linesPreceeded: 0
         linesSuffixed: 0
         #flagAddNextRound: false
