@@ -271,10 +271,11 @@ module.exports = provider =
         # This *should* contain the fxType as a string. May be undefined
         secondLastParam = helper.convertTokensArrayToString(params[params.length - 2]).trim()
         possibleParams = data.getFxParams secondLastParam
+        spaced = prefix.endsWith(' ') or lastWord isnt undefined
         for param in possibleParams
           if lastWord is undefined or lastWord == param.param.substring(0, lastWord.length)
             suggestions.push
-              text: param.param
+              text: (if spaced then "" else " ") + param.param + ": "
               replacementPrefix: lastWord
               type: 'property'
               leftLabel: 'fx ' + secondLastParam
