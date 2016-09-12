@@ -443,9 +443,47 @@ module.exports = provider =
                 type: 'snippet'
                 rightLabel: 'Sonic Pi Fn'
 
+  autocompleteComment: (commentStr, suggestions) ->
+    aliasCommands = ['play', 'control']
+    aliasCommands.concat data.listOfSynthNames
+
+    if commentStr.startsWith '#@'
+      aliasWords = commentStr.substring(2).trim().split(/\s+/)
+      if aliasWords.length <= 1
+        for cmd in aliasCommands
+          if (aliasWords[0] is undefined) or (aliasWords[0] == cmd.substring(0, aliasWords[0].length))
+            suggestions.push
+              text: cmd + " "
+              rightLabel: 'Alias Directive'
+              replacementPrefix: if aliasWords[0] isnt undefined then aliasWords[0] else ''
+      else if aliasWords[0] is 'play'
+        if aliasWords.length is 3
+          if (aliasWords[2].length is 0) or (isNaN(Number(aliasWords[2])))
+            for synthName in data.listOfSynthNames
+              if aliasWords[2] == synthName.substring(0, aliasWords[2].length)
+                suggestions.push
+                  text: synthName + " "
+                  replacementPrefix: aliasWords[2]
+                  rightLabel: 'Alias Synth'
+        else if aliasWords.length is 4
+          if not isNaN(Number(aliasWords[2]))
+            for synthName in data.listOfSynthNames
+              if aliasWords[3] == synthName.substring(0, aliasWords[3].length)
+                suggestions.push
+                  text: synthName + " "
+                  replacementPrefix: aliasWords[3]
+                  rightLabel: 'Alias Synth'
+    else if commentStr.startsWith '#$'
+      synth = commentStr.substring(2).trim()
+      for synthName in data.listOfSynthNames
+        if (synth.startsWith(':') and synth == synthName.substring(0, synth.length)) or
+           (not synth.startsWith(':') and synth == synthName.substring(1, synth.length))
+          suggestions.push
+            text: synthName + " "
+            replacementPrefix: synth
+            rightLabel: 'use_synth directive'
+
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix, activatedManually}) ->
-    console.log "DEBUG prefix scopes: "
-    console.log scopeDescriptor
     if @autocompleteDisableCount isnt 0
       @autocompleteDisableCount--
     if @autocompleteDisableCount is 0
@@ -535,5 +573,8 @@ module.exports = provider =
                                cursorContext,
                                scopeData,
                                prefix
+
+      else if cursorContext.lineType is 'comment'
+        @autocompleteComment cursorContext.comment, suggestions
 
       resolve(suggestions)

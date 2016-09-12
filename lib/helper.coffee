@@ -340,6 +340,20 @@ module.exports = helper =
       returnable.blockExpression = @parseCursorContext(lineObjectToParse, bufferPosition)
       return returnable
 
+    lastToken = tokens[tokens.length - 1]
+    if lastToken isnt undefined
+      if 'comment.line.number-sign.ruby' in lastToken.scopes
+        returnable.lineType = "comment"
+        commentTokens = []
+        for token in tokens.slice().reverse()
+          commentTokens.unshift token
+          break if 'punctuation.definition.comment.ruby' in token.scopes
+
+        returnable.comment = @convertTokensArrayToString(commentTokens)
+
+        return returnable
+
+
     # Can be postfix controls, or method calls
     # postfix controls are delimited by a
     parenDepth = 0; brackDepth = 0; braceDepth = 0
@@ -859,7 +873,7 @@ module.exports = helper =
               identifier: lineData.variables[0].value.trim()
               fxType: @convertTokensArrayToString(lineData.functionData.params[0]).trim()
       else if lineData.lineType is "assignment"
-        rightHandSideWords = @convertTokensArrayToString(lineData.assignmentData.rhs).trim().split(" ")
+        rightHandSideWords = @convertTokensArrayToString(lineData.assignmentData.rhs).trim().split(/\s+/)
         functionName = rightHandSideWords[0]
         if functionName in ["play", "play_chord", "play_pattern", "play_pattern_timed"]
           for lhsIdentifier in lineData.assignmentData.lhslist
@@ -890,7 +904,7 @@ module.exports = helper =
           synthname = lineData.comment.substring(2).trim()
           currentSynth = (if synthname.startsWith(':') then "" else ":") + synthname
         else if lineData.comment.startsWith('#@')
-          words = lineData.comment.substring(2).trim().split(' ').map((x) -> x.trim())
+          words = lineData.comment.substring(2).trim().split(/\s+/).map((x) -> x.trim())
           console.log words
           if words[0] is 'control'
             aliases.push
