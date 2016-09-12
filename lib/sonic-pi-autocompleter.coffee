@@ -89,12 +89,15 @@ module.exports = provider =
             currentFunctionAlias.functionName == "play" and
             params.length >= currentFunctionAlias.startSuggestingAt)
 
+      usedSynth = ''
       if functionName == "synth"
-        possibleParams = data.getSynthParams(helper.convertTokensArrayToString(params[0]).trim())
+        usedSynth = helper.convertTokensArrayToString(params[0]).trim()
       else if currentFunctionAlias isnt undefined and currentFunctionAlias.synthName isnt undefined
-        possibleParams = data.getSynthParams(currentFunctionAlias.synthName)
+        usedSynth = currentFunctionAlias.synthName
       else
-        possibleParams = data.getSynthParams scopeData.currentSynth
+        usedSynth = scopeData.currentSynth
+
+      possibleParams = data.getSynthParams(usedSynth)
       secondLastParam = params[params.length - 2] # may be undefined
 
       if lastWord isnt undefined
@@ -128,7 +131,7 @@ module.exports = provider =
               text: param.param + ": "
               replacementPrefix: lastWord
               type: 'property'
-              leftLabel: 'syn ' + scopeData.currentSynth
+              leftLabel: 'syn ' + usedSynth
               rightLabel: (if param.slide then 'Slidable' else if param.control then 'Controllable' else if param.static then 'Uncontrollable')
         for snippet in @snippets.play
           if lastWord is undefined or lastWord == snippet.substring(0, lastWord.length)
@@ -331,6 +334,15 @@ module.exports = provider =
       # Function name completion
       if (@getNumOfValuesInObject(exprData) is 0) or (params.length is 0 and lastWord is undefined) or
          (exprData.params[0] isnt undefined and helper.getNumberOfNonWhitespaceTokens(exprData.params[0]) is 0)
+        for alias in scopeData.aliases
+          if (@getNumOfValuesInObject(exprData) is 0) or
+             (functionName == alias.alias.substring(0, functionName.length))
+            suggestions.push
+              text: alias.alias + ' '
+              replacementPrefix: functionName
+              type: 'function'
+              rightLabel: alias.functionName + " alias"
+              leftLabel: (if alias.synthName then alias.synthName + " synth" else undefined)
         for fn in data.fns
           if (@getNumOfValuesInObject(exprData) is 0) or
              (functionName == fn.substring(0, functionName.length))
