@@ -1369,7 +1369,7 @@ module.exports = data =
         ]
       }
       {
-        name: ':rbpf'
+        name: ':rhpf'
         params: [
           { param: 'cutoff', slide: true }
           { param: 'res', slide: true }
@@ -1383,7 +1383,7 @@ module.exports = data =
         ]
       }
       {
-        name: ':rbpf'
+        name: ':rlpf'
         params: [
           { param: 'cutoff', slide: true }
           { param: 'res', slide: true }

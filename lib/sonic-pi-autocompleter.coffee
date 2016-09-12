@@ -277,7 +277,7 @@ module.exports = provider =
               text: param.param
               replacementPrefix: lastWord
               type: 'property'
-              leftLabel: 'fx ' + fx.fxType
+              leftLabel: 'fx ' + secondLastParam
               rightLabel: (if param.slide then 'Slidable' else if param.control then 'Controllable' else if param.static then 'Uncontrollable')
 
     else if functionName == "kill"
