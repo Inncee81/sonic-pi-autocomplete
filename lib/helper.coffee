@@ -812,6 +812,9 @@ module.exports = helper =
 
 
       lineData = @getLineData lastLineExpressionLineTokens
+      #XXX
+      if lineData is undefined
+        continue
       # console.log "lineData:"
       # console.log lineData
       # Step 5
