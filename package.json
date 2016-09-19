@@ -1,7 +1,7 @@
 {
   "name": "sonic-pi-autocomplete",
   "main": "./lib/sonic-pi-autocomplete",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "Sonic Pi + Atom Integration... with Super Cow Powers",
   "keywords": [
     "Sonic",
