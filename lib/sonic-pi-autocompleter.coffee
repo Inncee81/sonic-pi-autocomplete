@@ -102,8 +102,10 @@ module.exports = provider =
 
       if lastWord isnt undefined
         [k, v] = lastWord.split(':').map((x) -> x.trim())
-      else k = v = undefined
-      if v isnt undefined
+      else
+        k = v = undefined
+
+      if k.trim().length isnt 0 and v isnt undefined
         if k.endsWith "_slide_shape"
           for shape, value of @completions.placeholders.slide_shape
             if v == shape.substring(0, v.length)
@@ -155,8 +157,11 @@ module.exports = provider =
                 displayText: 'SR parameters'
             else if secondLastParam isnt undefined
               if (not ("constant.other.symbol.ruby" in @getTokensWithoutWhitespace(secondLastParam)[0].scopes))
-                secondLastParamKey = helper.convertTokensArrayToString(secondLastParam).split(':')[0].trim()
-                if data.extractParam(secondLastParamKey, possibleParams).slide
+                [secondLastParamKey, secondLastParamValue] = helper.convertTokensArrayToString(secondLastParam).
+                                                                    split(':').map((x) -> x.trim())
+                # It can't be a key unless there's a value!
+
+                if secondLastParamValue isnt undefined and data.extractParam(secondLastParamKey, possibleParams).slide
                   if snippet is 'slide'
                     suggestions.push
                       snippet: secondLastParamKey + '_slide: ${1:1}${2}'
@@ -516,8 +521,8 @@ module.exports = provider =
       console.log cursorContext
 
       linesInCurrentScope = helper.getLinesInCurrentScope tokens, bufferPosition
-      console.log "Lines Data:"
-      console.log linesInCurrentScope
+      # console.log "Lines Data:"
+      # console.log linesInCurrentScope
 
       scopeData = helper.createDatabase linesInCurrentScope
       console.log "Scope Data:"
@@ -525,7 +530,7 @@ module.exports = provider =
 
       # NOTE: with_fx, with_synth are also considered function calls in context.
 
-      console.log "num of values: " + @getNumOfValuesInObject cursorContext
+      console.log "num of values in cursor context: " + @getNumOfValuesInObject cursorContext
 
       if cursorContext.lineType is "function-call"
         @autocompleteFunctions suggestions,

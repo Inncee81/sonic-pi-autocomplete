@@ -438,17 +438,20 @@ module.exports = helper =
               returnable.tokens = parameterTokensToAdd.slice()
               for segment in maybeListOfParams
                 returnable.tokens.push segmentToken for segmentToken in segment
-            else
+            else if followingToken.value.trim() isnt "["
+              console.log "two number 9s, a number 9 large"
+              console.log token
+              console.log followingToken
               returnable.lineType = "function-call"
               returnable.functionName = token.value.trim()
               returnable.params = []
               maybeListOfParams.unshift parameterTokensToAdd.slice()
               returnable.params.push param for param in maybeListOfParams
-
               # console.log "tokenAtReturnable"
               # console.log token
-
               return returnable
+
+
           else if @getNumberOfNonWhitespaceTokens(tokens) is 1 # There's no params
             returnable.lineType = "function-call"
             returnable.functionName = token.value.trim()
@@ -878,7 +881,8 @@ module.exports = helper =
       else if lineData.lineType is "assignment"
         rightHandSideWords = @convertTokensArrayToString(lineData.assignmentData.rhs).trim().split(/\s+/)
         functionName = rightHandSideWords[0]
-        if functionName in ["play", "play_chord", "play_pattern", "play_pattern_timed"]
+        playFnNames = aliases.filter((x) -> x.functionAlias and x.functionName is 'play').map((x) -> x.alias)
+        if functionName in ["play", "play_chord", "play_pattern", "play_pattern_timed"].concat(playFnNames)
           for lhsIdentifier in lineData.assignmentData.lhslist
             synthInstances.push
               identifier: @convertTokensArrayToString(lhsIdentifier).trim()
