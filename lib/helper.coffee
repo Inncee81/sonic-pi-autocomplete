@@ -439,16 +439,11 @@ module.exports = helper =
               for segment in maybeListOfParams
                 returnable.tokens.push segmentToken for segmentToken in segment
             else if followingToken.value.trim() isnt "["
-              console.log "two number 9s, a number 9 large"
-              console.log token
-              console.log followingToken
               returnable.lineType = "function-call"
               returnable.functionName = token.value.trim()
               returnable.params = []
               maybeListOfParams.unshift parameterTokensToAdd.slice()
               returnable.params.push param for param in maybeListOfParams
-              # console.log "tokenAtReturnable"
-              # console.log token
               return returnable
 
 

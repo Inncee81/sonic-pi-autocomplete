@@ -89,6 +89,8 @@ module.exports = provider =
             currentFunctionAlias.functionName == "play" and
             params.length >= currentFunctionAlias.startSuggestingAt)
 
+      console.log currentFunctionAlias
+
       usedSynth = ''
       if functionName == "synth"
         usedSynth = helper.convertTokensArrayToString(params[0]).trim()
@@ -105,7 +107,7 @@ module.exports = provider =
       else
         k = v = undefined
 
-      if k.trim().length isnt 0 and v isnt undefined
+      if k isnt undefined and k.trim().length isnt 0 and v isnt undefined
         if k.endsWith "_slide_shape"
           for shape, value of @completions.placeholders.slide_shape
             if v == shape.substring(0, v.length)
@@ -517,20 +519,20 @@ module.exports = provider =
       #console.log currentLine
 
       cursorContext = helper.parseCursorContext currentLine, bufferPosition
-      console.log "Cursor context:"
-      console.log cursorContext
+      # console.log "Cursor context:"
+      # console.log cursorContext
 
       linesInCurrentScope = helper.getLinesInCurrentScope tokens, bufferPosition
       # console.log "Lines Data:"
       # console.log linesInCurrentScope
 
       scopeData = helper.createDatabase linesInCurrentScope
-      console.log "Scope Data:"
-      console.log scopeData
+      # console.log "Scope Data:"
+      # console.log scopeData
 
       # NOTE: with_fx, with_synth are also considered function calls in context.
 
-      console.log "num of values in cursor context: " + @getNumOfValuesInObject cursorContext
+      # console.log "num of values in cursor context: " + @getNumOfValuesInObject cursorContext
 
       if cursorContext.lineType is "function-call"
         @autocompleteFunctions suggestions,
