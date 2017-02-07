@@ -1421,8 +1421,28 @@ module.exports = data =
       {
         name: ':vowel'
         params: [
-          { param: 'vowel_sound', control: true }
-          { param: 'voice', control: true }
+          {
+            param: 'vowel_sound'
+            control: true
+            vowelSoundMapping: {
+              'A': 1
+              'E': 2
+              'I': 3
+              'O': 4
+              'U': 5
+            }
+          }
+          {
+            param: 'voice'
+            control: true
+            voiceMapping: {
+              'Soprano':        0
+              'Alto':           1
+              'Counter Tenor':  2
+              'Tenor':          3
+              'Bass':           4
+            }
+          }
         ]
       }
       {

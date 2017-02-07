@@ -23,6 +23,7 @@ module.exports = provider =
         "linear": '1'
         "sine": '3'
         "welch": '4'
+        "custom": '5'
         "squared": '6'
         "cubed": '7'
 
@@ -224,33 +225,91 @@ module.exports = provider =
               rightLabel: 'Sample Instance'
 
       else if params.length > 1
+        if lastWord isnt undefined
+          [k, v] = lastWord.split(':').map((x) -> x.trim())
+        else
+          k = v = undefined
+
         instanceName = helper.convertTokensArrayToString(params[0]).trim()
         for synth in scopeData.synthInstances
           if instanceName == synth.identifier
             possibleParams = data.getSynthParams synth.synthType
-            for param in possibleParams
-              if lastWord is undefined or lastWord == param.param.substring(0, lastWord.length)
-                if not param.static
-                  suggestions.push
-                    text: param.param + ": "
-                    replacementPrefix: lastWord
-                    type: 'property'
-                    leftLabel: 'syn ' + synth.synthType
-                    rightLabel: (if param.slide then 'Slidable' else if param.control then 'Controllable' else if param.static then 'Uncontrollable')
+
+            if k isnt undefined and k.trim().length isnt 0 and v isnt undefined
+              if k.endsWith "_slide_shape"
+                for shape, value of @completions.placeholders.slide_shape
+                  if v == shape.substring(0, v.length)
+                    suggestions.push
+                      text: value
+                      replacementPrefix: v
+                      type: 'snippet'
+                      displayText: shape
+                      rightLabel: 'Shape Enumeration'
+              else
+                param = data.extractParam k, possibleParams
+                if param.waveMapping isnt undefined
+                  for shape, value of param.waveMapping
+                    if v == shape.substring(0, v.length)
+                      suggestions.push
+                        text: "" + value
+                        replacementPrefix: v
+                        type: 'snippet'
+                        displayText: shape
+                        rightLabel: 'Shape Enumeration'
+            else
+              for param in possibleParams
+                if lastWord is undefined or lastWord == param.param.substring(0, lastWord.length)
+                  if not param.static
+                    suggestions.push
+                      text: param.param + ": "
+                      replacementPrefix: lastWord
+                      type: 'property'
+                      leftLabel: 'syn ' + synth.synthType
+                      rightLabel: (if param.slide then 'Slidable' else if param.control then 'Controllable' else if param.static then 'Uncontrollable')
             break
 
         for fx in scopeData.fxInstances
           if instanceName == fx.identifier
             possibleParams = data.getFxParams fx.fxType
-            for param in possibleParams
-              if lastWord is undefined or lastWord == param.param.substring(0, lastWord.length)
-                if not param.static
-                  suggestions.push
-                    text: param.param + ": "
-                    replacementPrefix: lastWord
-                    type: 'property'
-                    leftLabel: 'fx ' + fx.fxType
-                    rightLabel: (if param.slide then 'Slidable' else if param.control then 'Controllable' else if param.static then 'Uncontrollable')
+            if k isnt undefined and k.trim().length isnt 0 and v isnt undefined
+              param = data.extractParam k, possibleParams
+              if param.waveMapping isnt undefined
+                for shape, value of param.waveMapping
+                  if v == shape.substring(0, v.length)
+                    suggestions.push
+                      text: "" + value
+                      replacementPrefix: v
+                      type: 'snippet'
+                      displayText: shape
+                      rightLabel: 'Shape Enumeration'
+              else if param.vowelSoundMapping isnt undefined
+                for vowel, value of param.vowelSoundMapping
+                  if v == vowel.substring(0, v.length)
+                    suggestions.push
+                      text: "" + value
+                      replacementPrefix: v
+                      type: 'snippet'
+                      displayText: vowel
+                      rightLabel: 'Vowel Enumeration'
+              else if param.voiceMapping isnt undefined
+                for voiceType, value of param.voiceMapping
+                  if v == voiceType.substring(0, v.length)
+                    suggestions.push
+                      text: "" + value
+                      replacementPrefix: v
+                      type: 'snippet'
+                      displayText: voiceType
+                      rightLabel: 'Voice Type Enumeration'
+            else
+              for param in possibleParams
+                if lastWord is undefined or lastWord == param.param.substring(0, lastWord.length)
+                  if not param.static
+                    suggestions.push
+                      text: param.param + ": "
+                      replacementPrefix: lastWord
+                      type: 'property'
+                      leftLabel: 'fx ' + fx.fxType
+                      rightLabel: (if param.slide then 'Slidable' else if param.control then 'Controllable' else if param.static then 'Uncontrollable')
             break
 
         for sample in scopeData.sampleInstances
@@ -281,15 +340,51 @@ module.exports = provider =
         # This *should* contain the fxType as a string. May be undefined
         firstParam = helper.convertTokensArrayToString(params[0]).trim()
         possibleParams = data.getFxParams firstParam
-        spaced = prefix.endsWith(' ') or lastWord isnt undefined
-        for param in possibleParams
-          if lastWord is undefined or lastWord == param.param.substring(0, lastWord.length)
-            suggestions.push
-              text: (if spaced then "" else " ") + param.param + ": "
-              replacementPrefix: lastWord
-              type: 'property'
-              leftLabel: 'fx ' + firstParam
-              rightLabel: (if param.slide then 'Slidable' else if param.control then 'Controllable' else if param.static then 'Uncontrollable')
+
+        if lastWord isnt undefined
+          [k, v] = lastWord.split(':').map((x) -> x.trim())
+        else
+          k = v = undefined
+
+        if k isnt undefined and k.trim().length isnt 0 and v isnt undefined
+          param = data.extractParam k, possibleParams
+          if param.waveMapping isnt undefined
+            for shape, value of param.waveMapping
+              if v == shape.substring(0, v.length)
+                suggestions.push
+                  text: "" + value
+                  replacementPrefix: v
+                  type: 'snippet'
+                  displayText: shape
+                  rightLabel: 'Shape Enumeration'
+          else if param.vowelSoundMapping isnt undefined
+            for vowel, value of param.vowelSoundMapping
+              if v == vowel.substring(0, v.length)
+                suggestions.push
+                  text: "" + value
+                  replacementPrefix: v
+                  type: 'snippet'
+                  displayText: vowel
+                  rightLabel: 'Vowel Enumeration'
+          else if param.voiceMapping isnt undefined
+            for voiceType, value of param.voiceMapping
+              if v == voiceType.substring(0, v.length)
+                suggestions.push
+                  text: "" + value
+                  replacementPrefix: v
+                  type: 'snippet'
+                  displayText: voiceType
+                  rightLabel: 'Voice Type Enumeration'
+        else
+          spaced = prefix.endsWith(' ') or lastWord isnt undefined
+          for param in possibleParams
+            if lastWord is undefined or lastWord == param.param.substring(0, lastWord.length)
+              suggestions.push
+                text: (if spaced then "" else " ") + param.param + ": "
+                replacementPrefix: lastWord
+                type: 'property'
+                leftLabel: 'fx ' + firstParam
+                rightLabel: (if param.slide then 'Slidable' else if param.control then 'Controllable' else if param.static then 'Uncontrollable')
 
     else if functionName == "kill"
       spaced = prefix.endsWith(' ') or lastWord isnt undefined

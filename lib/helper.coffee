@@ -836,7 +836,7 @@ module.exports = helper =
       if currentScopeShallowness is scopesClimbed and
           ((not BLOCK_START_MAY_NOT_AFFECT_SCOPE) or
             lineData.lineType in ['comment', 'block-start-sonic-pi', 'block-start-ruby'])
-        console.log "pushing line"
+        # console.log "pushing line"
         linesData.push lineData
 
     return linesData.slice().reverse()
@@ -907,7 +907,6 @@ module.exports = helper =
           currentSynth = (if synthname.startsWith(':') then "" else ":") + synthname
         else if lineData.comment.startsWith('#@')
           words = lineData.comment.substring(2).trim().split(/\s+/).map((x) -> x.trim())
-          console.log words
           if words[0] is 'control'
             aliases.push
               functionAlias: true
