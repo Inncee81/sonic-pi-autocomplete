@@ -161,13 +161,18 @@ to get autocompletions for the `tb303` synth.
 
 ## What's new?
 
+### v.2.1: Minor fixes
+  - Enumeration autocomplete now works in all places (in `control` fn, `with_fx`)
+  - Fixed NPEs (argh)
+  - Fixed aliases not working sometimes
+
 ### v.2.0: Huge Update
   - Much smarter autocompletion.
   - Support for ALL samples, synths, fxs, functions, and their respective params
   - Smart scope-based contextual autocompletion with pre-parsing features
   - Added autocompletion directives
 
-### v.1.1: No file size limit! (for Sonic Pi 2.11, still in dev)
+### v.1.1: No file size limit! (only in dev mode without samaaron/sonic-pi@16a55e7657ea5d457c70e7594adcdcbb2b9e1ccd)
   - Previously, sending OSC messages over UDP to the Sonic Pi server directly limited the maximum file size
   - Sonic Pi v.2.11 (still under dev) now supports loading files into the buffer and playing it directly with the /save-and-run-buffer-via-local-file OSC command
   - This feature can be accessed via the command palatte (ctrl-shift-P) as `Play Huge File`, but you can create your own keybindings.
