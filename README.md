@@ -161,7 +161,7 @@ to get autocompletions for the `tb303` synth.
 
 ## What's new?
 
-### v.2.0: HUGE UPDATE
+### v.2.0: Huge Update
   - Much smarter autocompletion.
   - Support for ALL samples, synths, fxs, functions, and their respective params
   - Smart scope-based contextual autocompletion with pre-parsing features

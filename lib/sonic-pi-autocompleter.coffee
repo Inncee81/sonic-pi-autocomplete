@@ -460,7 +460,7 @@ module.exports = provider =
               suggestions.push suggestion
             else if fn is 'with_fx'
               suggestion =
-                snippet: 'with_fx :${1:reverb} do\n\t:${2}\nend'
+                snippet: 'with_fx :${1:reverb} do\n\t${2}\nend'
                 type: 'snippet'
                 rightLabel: 'Sonic Pi Snippet'
                 displayText: 'with_fx'
