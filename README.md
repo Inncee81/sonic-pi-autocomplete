@@ -13,7 +13,7 @@ With this plugin, you can livecode without having to worry about nitty things li
 Start up Sonic Pi or the Sonic Pi server (over UDP), and get live coding in Atom!
 
 Note that the support for executing huge files with the `Play Huge File` command,
-will only work with Sonic Pi 2.11 excluding commit 16a55e7657ea5d457c70e7594adcdcbb2b9e1ccd
+will only work with Sonic Pi 2.11 excluding commit https://github.com/samaaron/sonic-pi/commit/16a55e7657ea5d457c70e7594adcdcbb2b9e1ccd
 (meaning you'll have to compile it from source though, good luck!)
 
 ### Default Key Bindings
@@ -172,7 +172,7 @@ to get autocompletions for the `tb303` synth.
   - Smart scope-based contextual autocompletion with pre-parsing features
   - Added autocompletion directives
 
-### v.1.1: No file size limit! (only if 16a55e7657ea5d457c70e7594adcdcbb2b9e1ccd is excluded)
+### v.1.1: No file size limit! (only if https://github.com/samaaron/sonic-pi/commit/16a55e7657ea5d457c70e7594adcdcbb2b9e1ccd is excluded)
   - Previously, sending OSC messages over UDP to the Sonic Pi server directly limited the maximum file size
   - Sonic Pi v.2.11 (still under dev) now supports loading files into the buffer and playing it directly with the /save-and-run-buffer-via-local-file OSC command
   - This feature can be accessed via the command palatte (ctrl-shift-P) as `Play Huge File`, but you can create your own keybindings.
