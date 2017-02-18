@@ -738,6 +738,13 @@ module.exports = helper =
         lineType: "expression"
       }
 
+  getToken: (tokens, valueMatcher, scopesMatcher) ->
+    for token in tokens
+      if valueMatcher(token.value) and scopesMatcher(token.scopes)
+        return token
+
+    return null
+
   # Returns an array of lineTypes from the getLine method
   getLinesInCurrentScope: (allTokens, bufferPosition) ->
     # Gets all the newlines up to bufferPosition's row, exlusively
@@ -813,10 +820,19 @@ module.exports = helper =
       #XXX
       if lineData is undefined
         continue
-      # console.log "lineData:"
-      # console.log lineData
+
+      console.log "---------------------------"
+      console.log "lineData:"
+      console.log lineData
+
       # Step 5
-      if lineData.lineType in ["block-start-sonic-pi", "block-start-do", "block-start-ruby"]
+      if (lineData.lineType in ["block-start-sonic-pi", "block-start-do", "block-start-ruby"]) or
+         (lineData.lineType is "assignment" and
+          @getToken(
+            lineData.assignmentData.rhs,
+            (value) => value is 'case',
+            (tokens) => 'keyword.control.ruby' in tokens
+          ) isnt null)
         currentScopeShallowness++
         BLOCK_START_MAY_NOT_AFFECT_SCOPE = true
       else if lineData.lineType is "block-end"
@@ -827,16 +843,15 @@ module.exports = helper =
         scopesClimbed = currentScopeShallowness
         BLOCK_START_MAY_NOT_AFFECT_SCOPE = false
 
-      # console.log "---------------------------"
-      # console.log "at: " + @convertTokensArrayToString lastLineExpressionLineTokens
-      # console.log "currentShallowness: " + currentScopeShallowness
-      # console.log "scopesClimbed: " + scopesClimbed
+      console.log "at: " + @convertTokensArrayToString lastLineExpressionLineTokens
+      console.log "currentShallowness: " + currentScopeShallowness
+      console.log "scopesClimbed: " + scopesClimbed
 
       # Step 7 FIXME: Some same-level block headers do affect the outer scope, e.g. live_loop, define,...
       if currentScopeShallowness is scopesClimbed and
           ((not BLOCK_START_MAY_NOT_AFFECT_SCOPE) or
             lineData.lineType in ['comment', 'block-start-sonic-pi', 'block-start-ruby'])
-        # console.log "pushing line"
+        console.log "pushing line"
         linesData.push lineData
 
     return linesData.slice().reverse()

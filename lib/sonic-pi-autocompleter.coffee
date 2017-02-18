@@ -618,8 +618,8 @@ module.exports = provider =
       # console.log cursorContext
 
       linesInCurrentScope = helper.getLinesInCurrentScope tokens, bufferPosition
-      # console.log "Lines Data:"
-      # console.log linesInCurrentScope
+      console.log "Lines Data:"
+      console.log linesInCurrentScope
 
       scopeData = helper.createDatabase linesInCurrentScope
       # console.log "Scope Data:"
