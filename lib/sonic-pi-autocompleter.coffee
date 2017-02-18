@@ -164,7 +164,7 @@ module.exports = provider =
                                                                     split(':').map((x) -> x.trim())
                 # It can't be a key unless there's a value!
 
-                if secondLastParamValue isnt undefined and data.extractParam(secondLastParamKey, possibleParams).slide
+                if secondLastParamValue isnt undefined and data.extractParam(secondLastParamKey, possibleParams)?.slide
                   if snippet is 'slide'
                     suggestions.push
                       snippet: secondLastParamKey + '_slide: ${1:1}${2}'
